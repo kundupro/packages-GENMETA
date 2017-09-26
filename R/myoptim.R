@@ -1,0 +1,435 @@
+myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_list, C, initial_val, threshold, model_optim, missing_covariance_study_indices, different_intercept, no_of_iter_outer)
+{
+  beta_old <- as.vector(initial_val)
+  eps_inner <- 0
+  study <- study_optim
+  ref_dat <- ref_dat_optim
+  threshold_optim <- threshold
+
+  ## Logistic regression with same intercepts
+  if(different_intercept == FALSE)
+  {
+    iter = 0
+    continue <- TRUE
+    r_first_U <- c()
+    r_second_U <- c()
+    U <- matrix(NA, nrow(C), nrow(ref_dat))
+    Gamma_hat <- matrix(NA, nrow(C), ncol(ref_dat))
+    while(continue)
+    {
+      r_first <- c()
+      r_second <- c()
+      Dn_1 <- matrix(NA, ncol(ref_dat), nrow(C))
+      Dn_2 <- c()
+      W_star_first_list <- list()
+      V <- c()
+
+      k_j  <- 1
+
+      W_temp_1 <- as.vector((1/(1 + exp(-ref_dat %*% beta_old)))*(1/(1 + exp(ref_dat %*% beta_old))))
+      #print(class(W_temp_1))
+      W <- diag(W_temp_1)
+
+      #W <- diag(rep(1/W_temp_1, no_of_studies))
+      #print(is.nan(W))
+      e1 <- as.vector(1/(1 + exp(-ref_dat %*% beta_old)))
+      e2 <- as.vector((exp(-ref_dat %*% beta_old) - 1)/(exp(-ref_dat %*% beta_old) + 1))
+      e3 <- as.vector(1/(1 + exp(ref_dat %*% beta_old)))
+      l <- e1*e2*e3
+      nan_indices <- which(l %in% NaN == TRUE)
+      l[nan_indices] <- 0
+      L <- diag(l)
+
+
+
+      #print(sum(is.nan(W)))
+
+      for(k in 1 : no_of_studies)
+      {
+        r_first[[k]] <- e1
+        col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+        r_second[[k]] <-  as.vector(1/(1 + exp(-ref_dat[,col_ind] %*% study[[k]][[1]])))
+        #print(length(t(ref_dat[,col_ind]) %*% (r_first[[k]] - r_second[[k]])))
+        Dn_2 <- c(Dn_2, as.vector(t(ref_dat[,col_ind]) %*% (r_first[[k]] - r_second[[k]])))
+        ncol_study <- length(col_ind)
+        #print(ncol_study)
+        #print(class((r_first[[k]] - r_second[[k]])))
+        Dn_1[,k_j: (k_j + ncol_study -1)] <- t(ref_dat) %*% W %*% ref_dat[, col_ind]
+        V <- c(V, t(r_first[[k]] - r_second[[k]]) %*% ref_dat[, col_ind] %*% t(ref_dat[, col_ind]) %*% L)
+        W_star_first_list[[k]] <- W %*% ref_dat[,col_ind]
+        k_j <- k_j + ncol_study
+      }
+
+      #print(dim(Dn_1))
+      #print(length(Dn_2))
+      Dn <- Dn_1 %*% C %*% Dn_2
+
+      W_star_second <- diag(V)
+
+      W_star_first <- Reduce(magic::adiag,W_star_first_list) %*% C %*% t(Reduce(magic::adiag,W_star_first_list))
+      W_star <- W_star_first + W_star_second
+
+      #Define Jacobian here
+      J_n <- t(X_rbind) %*% W_star %*% X_rbind
+      #print(class(J_n))
+      #print(J_n)
+      #print(is.nan(J_n_beta))
+      #print(det(J_n))
+      if(det(J_n) == 0)
+      { beta_old <- rep(NA, ncol(ref_dat))
+      break;
+      }
+      beta_new <- beta_old - (solve(J_n, tol = 1e-60) %*% Dn)
+      #print(D_n_beta_t)
+      #print(beta_old)
+      #print(beta_new)
+      eps_inner <- sqrt(sum((beta_new - beta_old)^2))
+      #print(eps_inner)
+      beta_old <- beta_new
+      iter = iter + 1
+      #print("Number of iterations \n")
+      #print(iter)
+      if(eps_inner < threshold_optim || iter > 1000)
+        continue <- FALSE
+
+
+    }
+    no_of_iter_outer <- no_of_iter_outer + 1
+
+    if(sum(is.na(beta_old)) == 0)
+    {
+      #Define the indices of the studies where the estimate of the variance-covariance matix or sample size is missing(NULL)
+      study_indices <- seq(1,no_of_studies,1)
+      non_missing_covariance_study_indices <- study_indices[-which(study_indices %in% missing_covariance_study_indices)]
+      #print(non_missing_covariance_study_indices)
+      #print(missing_covariance_study_indices)
+
+      #Define lambda_ref here
+      lambda_ref <- list()
+      if(length(missing_covariance_study_indices) > 0)
+      {
+        for(k in missing_covariance_study_indices)
+        {
+          col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+          #Define W_lambda_ref_logistic
+          w_lambda_ref_logistic_vec <- (((1/(1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]])))^2)*(1/(1 + exp(-ref_dat %*% beta_old)))) + (((1/(1 + exp(-ref_dat[,col_ind] %*% study[[k]][[1]])))^2)*(1/(1 + exp(ref_dat %*% beta_old))))
+          #print(w_lambda_ref_logistic_vec )
+          W_lambda_ref_logistic <- diag(as.vector(w_lambda_ref_logistic_vec))
+          #print(class(W_lambda_ref_logistic))
+          lambda_ref[[k]] <- (t(ref_dat[,col_ind]) %*% W_lambda_ref_logistic %*% ref_dat[,col_ind])/(study[[k]][[3]])
+          #print(dim(lambda_ref[[k]]))
+        }
+
+        for(k in non_missing_covariance_study_indices)
+        {
+          col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+          #Define W_k here
+          temp_weight_logistic <- as.vector((1/(1 + exp(-ref_dat[, col_ind] %*% study[[k]][[1]])))*(1/(1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))))
+          #temp_weight_logistic <- (exp(ref_dat[,col_ind] %*% study[[k]][[1]]))/((1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))^2)
+          W_k <- t(ref_dat[,col_ind]) %*% diag(temp_weight_logistic) %*% ref_dat[,col_ind]
+          lambda_ref[[k]] <- (W_k %*% study[[k]][[2]] %*% t(W_k))/(nrow(ref_dat))
+          #print(dim(lambda_ref[[k]]))
+        }
+
+      }
+      ## When all the estimates for var-cov are provided
+      if(length(missing_covariance_study_indices) == 0)
+      {
+        for(k in 1 : no_of_studies)
+        {
+          col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+          #Define W_k here
+          temp_weight_logistic <- as.vector((1/(1 + exp(-ref_dat[, col_ind] %*% study[[k]][[1]])))*(1/(1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))))
+          #temp_weight_logistic <- (exp(ref_dat[,col_ind] %*% study[[k]][[1]]))/((1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))^2)
+          W_k <- t(ref_dat[,col_ind]) %*% diag(temp_weight_logistic) %*% ref_dat[,col_ind]
+          lambda_ref[[k]] <- (W_k %*% study[[k]][[2]] %*% t(W_k))/(nrow(ref_dat))
+          #print(dim(lambda_ref[[k]]))
+        }
+
+      }
+
+      Lambda_ref <- Reduce(magic::adiag,lambda_ref)
+      #print(dim(Lambda_ref))
+      k_U = 1
+      r_first_1 <- as.vector(1/(1 + exp(-ref_dat %*% beta_old)))
+      W_Gamma_temp_1 <- as.vector((1/(1 + exp(-ref_dat %*% beta_old)))*(1/(1 + exp(ref_dat %*% beta_old))))
+      for(k in 1: no_of_studies)
+      {
+        col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+        r_first_U[[k]] <- r_first_1
+        r_second_U[[k]] <- as.vector(1/(1 + exp(-ref_dat[,col_ind] %*% study[[k]][[1]])))
+        U[k_U:(k_U + length(col_ind)-1), ] <- t(ref_dat[ ,col_ind]) %*% diag(r_first_U[[k]]-r_second_U[[k]])
+        Gamma_hat[k_U:(k_U + length(col_ind)-1), ] <- t(ref_dat[, col_ind]) %*% diag(W_Gamma_temp_1) %*% ref_dat
+        k_U <- k_U + length(col_ind)
+      }
+
+      # Defining delta_hat here...
+      Delta_hat <- (U %*% t(U))/(nrow(ref_dat))
+
+      # Defining optimal C here...
+      C_beta <- solve(Lambda_ref + Delta_hat, tol = 1e-60)
+
+      # Defining Gamma_hat here...
+      Gamma_hat <- Gamma_hat/nrow(ref_dat)
+
+      info <- (t(Gamma_hat) %*% C_beta %*% Gamma_hat)
+      if(det(info) == 0)
+      {
+        asy_var_opt = NULL
+      }else{
+        if(no_of_iter_outer == 1)
+          asy_var_opt <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% C_beta %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
+        # Defining the asymptotic variance with optimal C here...
+        asy_var_opt <- solve(info, tol = 1e-60)/nrow(ref_dat)
+      }
+    }
+
+    if(sum(is.na(beta_old)) > 0)
+    {
+      asy_var_opt = NULL
+      C_beta = NULL
+    }
+
+
+    # Returning objects for the inner loop(NR method)
+    return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1))
+  }
+
+
+
+
+
+
+
+
+   ## Logistic regression with different intercepts
+  if(different_intercept == TRUE)
+  {
+    W_Gamma <- list()
+    X_rbind_star <- matrix(0, nrow(ref_dat)*no_of_studies, length(beta_old))
+    k_X_rbind_star <- 1
+    for(k in 1:no_of_studies)
+    {
+      X_rbind_star[(k_X_rbind_star:(k_X_rbind_star + nrow(ref_dat) -1)),k] <- 1
+      X_rbind_star[(k_X_rbind_star:(k_X_rbind_star + nrow(ref_dat) -1)), ((no_of_studies + 1):length(beta_old))] <- ref_dat[,-1]
+      k_X_rbind_star <- k_X_rbind_star + nrow(ref_dat)
+    }
+    #print(dim(X_rbind_star))
+    iter = 0
+    continue <- TRUE
+    r_first_U <- c()
+    r_second_U <- c()
+    U <- matrix(NA, nrow(C), nrow(ref_dat))
+    Gamma_hat <- matrix(NA, nrow(C), length(beta_old))
+    while(continue)
+    {
+      #print(beta_old)
+      beta_k <- list()
+      for(k in 1:no_of_studies)
+      {
+        beta_k[[k]] <- beta_old[c(k,((no_of_studies + 1):length(beta_old)))]
+      }
+      #print(beta_k)
+      r_first <- c()
+      r_second <- c()
+      Dn_1 <- matrix(NA, length(beta_old), nrow(C))
+      Dn_2 <- c()
+      W <- list()
+      L <- list()
+      W_star_first_list <- list()
+      V <- c()
+
+      k_j  <- 1
+
+
+
+      for(k in 1:no_of_studies)
+      {
+        W_temp_1 <- as.vector((1/(1 + exp(-ref_dat %*% beta_k[[k]])))*(1/(1 + exp(ref_dat %*% beta_k[[k]]))))
+        W[[k]] <- diag(W_temp_1)
+      }
+
+      for(k in 1:no_of_studies)
+      {
+        e1 <- as.vector(1/(1 + exp(-ref_dat %*% beta_k[[k]])))
+        e2 <- as.vector((exp(-ref_dat %*% beta_k[[k]]) - 1)/(exp(-ref_dat %*% beta_k[[k]]) + 1))
+        e3 <- as.vector(1/(1 + exp(ref_dat %*% beta_k[[k]])))
+        l <- e1*e2*e3
+        nan_indices <- which(l %in% NaN == TRUE)
+        #print(length(nan_indices))
+        l[nan_indices] <- 0
+        L[[k]] <- diag(l)
+      }
+
+
+
+
+      #print(sum(is.nan(W)))
+      k_j_star <- 1
+      for(k in 1 : no_of_studies)
+      {
+        r_first[[k]] <- as.vector(1/(1 + exp(-ref_dat %*% beta_k[[k]])))
+        col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+        r_second[[k]] <-  as.vector(1/(1 + exp(-ref_dat[,col_ind] %*% study[[k]][[1]])))
+        #print(length(t(ref_dat[,col_ind]) %*% (r_first[[k]] - r_second[[k]])))
+        Dn_2 <- c(Dn_2, as.vector(t(ref_dat[,col_ind]) %*% (r_first[[k]] - r_second[[k]])))
+        ncol_study <- length(col_ind)
+        #print(ncol_study)
+        #print(class((r_first[[k]] - r_second[[k]])))
+        Dn_1[,k_j: (k_j + ncol_study -1)] <- t(X_rbind_star[k_j_star:(k_j_star + nrow(ref_dat) - 1), ]) %*% W[[k]] %*% ref_dat[, col_ind]
+        V <- c(V, t(r_first[[k]] - r_second[[k]]) %*% ref_dat[, col_ind] %*% t(ref_dat[, col_ind]) %*% L[[k]])
+        W_star_first_list[[k]] <- W[[k]] %*% ref_dat[,col_ind]
+        k_j <- k_j + ncol_study
+        k_j_star <- k_j_star + nrow(ref_dat)
+      }
+
+      #print(dim(Dn_1))
+      #print(length(Dn_2))
+      Dn <- Dn_1 %*% C %*% Dn_2
+      #print(length(Dn))
+
+      W_star_second <- diag(V)
+
+      W_star_first <- Reduce(magic::adiag,W_star_first_list) %*% C %*% t(Reduce(magic::adiag,W_star_first_list))
+      W_star <- W_star_first + W_star_second
+
+      #Define Jacobian here
+      J_n <- t(X_rbind_star) %*% W_star %*% X_rbind_star
+      #print(class(J_n))
+      #print(J_n)
+      #print(is.nan(J_n_beta))
+      #print(det(J_n))
+      if(det(J_n) == 0)
+      { beta_old <- rep(NA, (ncol(ref_dat) - 1 + no_of_studies))
+      break;
+      }
+      beta_new <- beta_old - (solve(J_n, tol = 1e-60) %*% Dn)
+      #print(D_n_beta_t)
+      #print(beta_old)
+      #print(beta_new)
+      eps_inner <- sqrt(sum((beta_new - beta_old)^2))
+      #print(eps_inner)
+      beta_old <- beta_new
+      iter = iter + 1
+      #print("Number of iterations \n")
+      #print(iter)
+      if(eps_inner < threshold_optim || iter > 1000)
+        continue <- FALSE
+
+
+    }
+
+    no_of_iter_outer <- no_of_iter_outer + 1
+
+    if(sum(is.na(beta_old)) == 0)
+    {
+      for(k in 1:no_of_studies)
+      {
+        beta_k[[k]] <- beta_old[c(k,((no_of_studies + 1):length(beta_old)))]
+      }
+
+      #Define the indices of the studies where the estimate of the variance-covariance matix or sample size is missing(NULL)
+      study_indices <- seq(1,no_of_studies,1)
+      non_missing_covariance_study_indices <- study_indices[-which(study_indices %in% missing_covariance_study_indices)]
+      #print(non_missing_covariance_study_indices)
+      #print(missing_covariance_study_indices)
+
+      #Define lambda_ref here
+      lambda_ref <- list()
+      if(length(missing_covariance_study_indices) > 0)
+      {
+        for(k in missing_covariance_study_indices)
+        {
+          col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+          #Define W_lambda_ref_logistic
+          w_lambda_ref_logistic_vec <- (((1/(1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]])))^2)*(1/(1 + exp(-ref_dat %*% beta_k[[k]])))) + (((1/(1 + exp(-ref_dat[,col_ind] %*% study[[k]][[1]])))^2)*(1/(1 + exp(ref_dat %*% beta_k[[k]]))))
+          #print(w_lambda_ref_logistic_vec )
+          W_lambda_ref_logistic <- diag(as.vector(w_lambda_ref_logistic_vec))
+          #print(class(W_lambda_ref_logistic))
+          lambda_ref[[k]] <- (t(ref_dat[,col_ind]) %*% W_lambda_ref_logistic %*% ref_dat[,col_ind])/(study[[k]][[3]])
+          #print(dim(lambda_ref[[k]]))
+        }
+
+        for(k in non_missing_covariance_study_indices)
+        {
+          col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+          #Define W_k here
+          temp_weight_logistic <- as.vector((1/(1 + exp(-ref_dat[, col_ind] %*% study[[k]][[1]])))*(1/(1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))))
+          #temp_weight_logistic <- (exp(ref_dat[,col_ind] %*% study[[k]][[1]]))/((1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))^2)
+          W_k <- t(ref_dat[,col_ind]) %*% diag(temp_weight_logistic) %*% ref_dat[,col_ind]
+          lambda_ref[[k]] <- (W_k %*% study[[k]][[2]] %*% t(W_k))/(nrow(ref_dat))
+          #print(dim(lambda_ref[[k]]))
+        }
+
+      }
+      ## When all the estimates for var-cov are provided
+      if(length(missing_covariance_study_indices) == 0)
+      {
+        for(k in 1 : no_of_studies)
+        {
+          col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+          #Define W_k here
+          temp_weight_logistic <- as.vector((1/(1 + exp(-ref_dat[, col_ind] %*% study[[k]][[1]])))*(1/(1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))))
+          #temp_weight_logistic <- (exp(ref_dat[,col_ind] %*% study[[k]][[1]]))/((1 + exp(ref_dat[,col_ind] %*% study[[k]][[1]]))^2)
+          W_k <- t(ref_dat[,col_ind]) %*% diag(temp_weight_logistic) %*% ref_dat[,col_ind]
+          lambda_ref[[k]] <- (W_k %*% study[[k]][[2]] %*% t(W_k))/(nrow(ref_dat))
+          #print(dim(lambda_ref[[k]]))
+        }
+
+      }
+
+      Lambda_ref <- Reduce(magic::adiag,lambda_ref)
+      #print(dim(Lambda_ref))
+
+      ## Defining Gamma_hat...
+      k_U = 1
+      k_j_star <- 1
+      #beta_k <- list()
+
+      #r_first_1 <- as.vector(1/(1 + exp(-ref_dat %*% beta_old)))
+      #W_Gamma_temp_1 <- as.vector((1/(1 + exp(-ref_dat %*% beta_old)))*(1/(1 + exp(ref_dat %*% beta_old))))
+      for(k in 1: no_of_studies)
+      {
+        col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
+        r_first_U[[k]] <- as.vector(1/(1 + exp(-ref_dat %*% beta_k[[k]])))
+        r_second_U[[k]] <- as.vector(1/(1 + exp(-ref_dat[,col_ind] %*% study[[k]][[1]])))
+        U[k_U:(k_U + length(col_ind)-1), ] <- t(ref_dat[ ,col_ind]) %*% diag(r_first_U[[k]]-r_second_U[[k]])
+        W_Gamma_temp_1 <- as.vector((1/(1 + exp(-ref_dat %*% beta_k[[k]])))*(1/(1 + exp(ref_dat %*% beta_k[[k]]))))
+        Gamma_hat[k_U:(k_U + length(col_ind)-1), ] <- t(ref_dat[, col_ind]) %*% diag(W_Gamma_temp_1) %*% X_rbind_star[k_j_star:(k_j_star + nrow(ref_dat) - 1), ]
+        k_U <- k_U + length(col_ind)
+        k_j_star <- k_j_star + nrow(ref_dat)
+      }
+
+      Delta_hat <- (U %*% t(U))/(nrow(ref_dat))
+
+      C_beta <- solve(Lambda_ref + Delta_hat, tol = 1e-60)
+      #C_beta <- solve(round(Delta_hat + Lambda_ref,2), tol = 1e-30)
+      Gamma_hat <- Gamma_hat/nrow(ref_dat)
+
+      info <- (t(Gamma_hat) %*% C_beta %*% Gamma_hat)
+
+      if(det(info) == 0)
+      {
+        asy_var_opt = NULL
+      }else{
+        if(no_of_iter_outer == 1)
+          asy_var_opt <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% C_beta %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
+        asy_var_opt <- solve(info, tol = 1e-60)/nrow(ref_dat)
+      }
+
+    }
+
+
+    if(sum(is.na(beta_old)) > 0)
+    {
+      asy_var_opt = NULL
+      C_beta = NULL
+    }
+    #print(class(info))
+    #asy_var_beta <- (solve(info, tol = 1e-30))/nrow(ref_dat)
+    #asy_var_beta <- diag(3)
+    #print(asy_var_beta)
+    return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1))
+  }
+
+}
