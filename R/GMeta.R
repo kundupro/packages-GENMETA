@@ -24,7 +24,7 @@
 #' @return An object of class "GMeta" is a list containing GMeta estimate, its variance-covariance matrix and estimates the residual variance in the case of "linear" model .
 #' \item{Est.coeff}{a numeric vector containing the estimated regression coefficients of the maximal model using optimal weighting matrix.}
 #' \item{Est.var.cov}{a matrix containing estimate of variance-covariance matrix of the corresponding GMeta estimator.}
-#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}^Tvar(X)\hat{\beta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data.}
+#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data.}
 #' \item{iter}{a numeric containing the number of iterations used in the algorithm}
 #' \cr Res.var is NA when the model is "logistic".
 #' \cr The function \code{\link[GMeta]{GMeta.summary}} can be used to obtain a summary of the results obtained from GMeta.
