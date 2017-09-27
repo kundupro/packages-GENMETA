@@ -24,9 +24,9 @@
 #' @return An object of class "GMeta" is a list containing GMeta estimate, its variance-covariance matrix and estimates the residual variance in the case of "linear" model .
 #' \item{Est.coeff}{a numeric vector containing the estimated regression coefficients of the maximal model using optimal weighting matrix.}
 #' \item{Est.var.cov}{a matrix containing estimate of variance-covariance matrix of the corresponding GMeta estimator.}
-#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data.}
+#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
 #' \item{iter}{a numeric containing the number of iterations used in the algorithm}
-#' \cr Res.var is NA when the model is "logistic".
+#' \item{call}{the matched call}
 #' \cr The function \code{\link[GMeta]{GMeta.summary}} can be used to obtain a summary of the results obtained from GMeta.
 #' @keywords Generalized Meta Analysis
 #' @references Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. \href{https://arxiv.org/abs/1708.03818}{arXiv:1708.03818v1 [stat.ME]}.
@@ -88,7 +88,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
   #   threshold <- control[[1]]
   #   maxit <- control[[2]]
   # }
-
+  call_gmeta <- match.call()
   ## Checking if the control argument is missing
   if(missing(control))
   {
@@ -410,7 +410,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
             names(beta_old) <- colnames(ref_dat)
             colnames(asy_var_opt) <- colnames(ref_dat)
             rownames(asy_var_opt) <- colnames(ref_dat)
-            linear_result <- list("Est.coeff" = beta_old, "Est.var.cov" = asy_var_opt, "Res.var" = disp_max_old, "iter" = no_of_iter)
+            linear_result <- list("Est.coeff" = beta_old, "Est.var.cov" = asy_var_opt, "Res.var" = disp_max_old, "iter" = no_of_iter, "call" = call_gmeta)
             class(linear_result) <- "GMeta"
             return(linear_result)
 
@@ -486,7 +486,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
                   rownames(asy_var_beta_converged) <- colnames(ref_dat)
                 }
 
-                logistic_result <- list("Est.coeff" = beta_initial, "Est.var.cov" = asy_var_beta_converged, "Res.var" = NA, "iter" = total_iter)
+                logistic_result <- list("Est.coeff" = beta_initial, "Est.var.cov" = asy_var_beta_converged, "Res.var" = NA, "iter" = total_iter, "call" = call_gmeta)
                 class(logistic_result) <- "GMeta"
                 return(logistic_result)
 
