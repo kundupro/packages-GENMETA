@@ -7,7 +7,7 @@
 GMeta.control(epsilon = 1e-06, maxit = 1000)
 }
 \arguments{
-\item{epsilon}{a positive numeric indicating converegence tolerence; the algotithm stops when the absolute difference between the estimates in current and previous step is less than epsilon, i.e, \eqn{|estimate_{new} - estimate_{old}| < \epsilon}}
+\item{epsilon}{a positive numeric indicating converegence tolerence; the algorithm stops when the absolute difference between the estimates in current and previous step is less than epsilon, i.e, \eqn{|estimate_{new} - estimate_{old}| < \epsilon}}
 
 \item{maxit}{a positive numeric indicating the maximum number of iterations to be used in the algorithm. Default is 1000.}
 }
