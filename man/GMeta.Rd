@@ -69,7 +69,7 @@ Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Mult
 \code{\link[GMeta]{GMeta.summary}}, \code{\link[GMeta]{study_info}}, \code{\link[GMeta]{reference_data}}
 }
 \author{
-Runlong Tang, Prosenjit Kundu and Nilanjan Chatterjee.
+Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
 }
 \keyword{Analysis}
 \keyword{Generalized}

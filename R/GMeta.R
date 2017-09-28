@@ -45,7 +45,7 @@
 #' result_same <- GMeta(study_info, reference_data, model)
 #' print(result_same)
 
-#' @author Runlong Tang, Prosenjit Kundu and Nilanjan Chatterjee.
+#' @author Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
 #' @import magic
 #' @import MASS
 #' @import stats
