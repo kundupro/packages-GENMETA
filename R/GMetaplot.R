@@ -4,17 +4,14 @@
 #' @param x an object of class "GMeta"
 #' @param study_info is the same study_info argument used in GMeta function.
 #' @examples
-#' # This example shows how to obtain the summary of GMeta object.
+#' # This example shows how to obtain the forest plot of GMeta object.
 #' data(study_info_plot)
+#' data(reference_data)
 #' model <- "logistic"
 #' result_diff <- GMeta(study_info_plot, reference_data, model, variable_intercepts = TRUE)
 #' GMetaplot(result_diff, study_info_plot)
 #' @export
-# summary.GMeta <-function(object, ...){
-#   UseMethod("summary")
-#   NextMethod("generic = NULL, object = NULL", ...)
-# }
-Gmetaplot <- function(x, study_info)
+GMetaplot <- function(x, study_info)
 {
   no_of_studies <- length(study_info)
   row_names <- c()
