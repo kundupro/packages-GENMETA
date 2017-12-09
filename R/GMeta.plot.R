@@ -1,24 +1,26 @@
 #' Generalized Meta-analysis(forest plot)
 #'
 #' This function plots the confidence intervals with boxes as the study specific estimates and diamond as the GMeta estimate. For the current version, it assumes that the estimate of the variance-covariance matrix in each of the studies is provided.
+#' It is demonstrated using a different dataset, "study_info_plot", which meets the assumption.
 #' @param x an object of class "GMeta"
-#' @param study_info is the same study_info argument used in GMeta function.
+#' @param study_info_plot is the same study_info argument used in GMeta function.
 #' @examples
 #' # This example shows how to obtain the forest plot of GMeta object.
 #' data(study_info_plot)
 #' data(reference_data)
 #' model <- "logistic"
 #' result_diff <- GMeta(study_info_plot, reference_data, model, variable_intercepts = TRUE)
-#' GMetaplot(result_diff, study_info_plot)
+#' GMeta.plot(result_diff, study_info_plot)
 #' @export
-GMetaplot <- function(x, study_info)
+
+GMeta.plot <- function(x, study_info_plot)
 {
-  no_of_studies <- length(study_info)
+  no_of_studies <- length(study_info_plot)
   row_names <- c()
   tot_var_names <- c()
   for(i in 1: no_of_studies)
   {
-    tot_var_names <- union(tot_var_names, names(study_info[[i]][[1]]))
+    tot_var_names <- union(tot_var_names, names(study_info_plot[[i]][[1]]))
   }
   tot_var_names_wo_intercept <- tot_var_names[-1]
 
@@ -40,12 +42,12 @@ GMetaplot <- function(x, study_info)
 
     for(j in 1: no_of_studies)
     {
-      if(tot_var_names_wo_intercept[i] %in% names(study_info[[j]][[1]]) == T)
+      if(tot_var_names_wo_intercept[i] %in% names(study_info_plot[[j]][[1]]) == T)
       {
-        index <- which(names(study_info[[j]][[1]]) %in% tot_var_names_wo_intercept[i] == T)
-        data_plot[j,2] <- as.vector(study_info[[j]][[1]])[index]
-        data_plot[j,3] <- as.vector(study_info[[j]][[1]])[index] - 1.96*sqrt(as.vector(diag(study_info[[j]][[2]]))[index])
-        data_plot[j,4] <- as.vector(study_info[[j]][[1]])[index] + 1.96*sqrt(as.vector(diag(study_info[[j]][[2]]))[index])
+        index <- which(names(study_info_plot[[j]][[1]]) %in% tot_var_names_wo_intercept[i] == T)
+        data_plot[j,2] <- as.vector(study_info_plot[[j]][[1]])[index]
+        data_plot[j,3] <- as.vector(study_info_plot[[j]][[1]])[index] - 1.96*sqrt(as.vector(diag(study_info_plot[[j]][[2]]))[index])
+        data_plot[j,4] <- as.vector(study_info_plot[[j]][[1]])[index] + 1.96*sqrt(as.vector(diag(study_info_plot[[j]][[2]]))[index])
       }
 
     }

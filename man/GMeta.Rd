@@ -30,7 +30,8 @@ An object of class "GMeta" is a list containing GMeta estimate, its variance-cov
 \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
 \item{iter}{a numeric containing the number of iterations used in the algorithm}
 \item{call}{the matched call}
-\cr The function \code{\link[GMeta]{GMeta.summary}} can be used to obtain a summary of the results obtained from GMeta.
+\cr The function \code{\link[GMeta]{GMeta.summary}} prints a summary of the results obtained from GMeta.
+\cr The function \code{\link[GMeta]{GMeta.plot}} plots the estimate of the parameter from each of the studies, the summary measure(GMeta estimate) and their confidence intervals.
 }
 \description{
 Generalized Meta-analysis(GMeta) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates.
@@ -66,7 +67,7 @@ print(result_same)
 Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. \href{https://arxiv.org/abs/1708.03818}{arXiv:1708.03818v1 [stat.ME]}.
 }
 \seealso{
-\code{\link[GMeta]{GMeta.summary}}, \code{\link[GMeta]{study_info}}, \code{\link[GMeta]{reference_data}}
+\code{\link[GMeta]{GMeta.summary}}, \code{\link[GMeta]{study_info}}, \code{\link[GMeta]{reference_data}}, \code{\link[GMeta]{GMeta.plot}}.
 }
 \author{
 Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.

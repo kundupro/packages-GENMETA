@@ -2,7 +2,9 @@
 
 export(GMeta)
 export(GMeta.control)
+export(GMeta.plot)
 export(GMeta.summary)
 import(MASS)
+import(graphics)
 import(magic)
 import(stats)

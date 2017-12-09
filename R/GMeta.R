@@ -27,10 +27,11 @@
 #' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
 #' \item{iter}{a numeric containing the number of iterations used in the algorithm}
 #' \item{call}{the matched call}
-#' \cr The function \code{\link[GMeta]{GMeta.summary}} can be used to obtain a summary of the results obtained from GMeta.
+#' \cr The function \code{\link[GMeta]{GMeta.summary}} prints a summary of the results obtained from GMeta.
+#' \cr The function \code{\link[GMeta]{GMeta.plot}} plots the estimate of the parameter from each of the studies, the summary measure(GMeta estimate) and their confidence intervals. 
 #' @keywords Generalized Meta Analysis
 #' @references Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. \href{https://arxiv.org/abs/1708.03818}{arXiv:1708.03818v1 [stat.ME]}.
-#' @seealso \code{\link[GMeta]{GMeta.summary}}, \code{\link[GMeta]{study_info}}, \code{\link[GMeta]{reference_data}}
+#' @seealso \code{\link[GMeta]{GMeta.summary}}, \code{\link[GMeta]{study_info}}, \code{\link[GMeta]{reference_data}}, \code{\link[GMeta]{GMeta.plot}}.
 #' @examples
 #' # This example shows the GMeta implementation on a simulated data set for logistic regression
 #' data(reference_data)
@@ -49,6 +50,7 @@
 #' @import magic
 #' @import MASS
 #' @import stats
+#' @import graphics
 #' @export
 #library(magic)
 #library(MASS)
