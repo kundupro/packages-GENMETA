@@ -1,10 +1,10 @@
 Package: GMeta
 Title: Implements generalized meta-analysis
 Version: 0.1
-Authors@R: as.person(c("Prosenjit Kundu <pkundu3@jhu.edu> [aut, cre]", "Runlong Tang <rtang15@jhmi.edu> [aut]", "Nilanjan Chatterjee <nchatte2@jhu.edu> [aut]"))
+Authors: Prosenjit Kundu <pkundu3@jhu.edu> [aut, cre], Runlong Tang <rtang15@jhmi.edu> [aut], Nilanjan Chatterjee <nchatte2@jhu.edu> [aut]
 Description: GMeta implements the generalized meta-analysis using IRWLS algorithm.
 Depends: R (>= 3.3.1)
-Imports: MASS, magic
+Imports: MASS, magic, graphics, stats
 License: GPL
 Encoding: UTF-8
 LazyData: true
