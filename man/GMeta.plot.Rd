@@ -9,7 +9,7 @@ GMeta.plot(x, study_info_plot)
 \arguments{
 \item{x}{an object of class "GMeta"}
 
-\item{study_info_plot}{is the same study_info argument used in GMeta function.}
+\item{study_info_plot}{a list of lists containing information about the studies(similar to the study_info argument used in GMeta function.)}
 }
 \description{
 This function plots the confidence intervals with boxes as the study specific estimates and diamond as the GMeta estimate. For the current version, it assumes that the estimate of the variance-covariance matrix in each of the studies is provided.
