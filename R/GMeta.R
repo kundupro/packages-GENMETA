@@ -327,6 +327,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
             disp <- rep(NA, no_of_studies)
             for(j in study_indices)
             {
+                col_ind <-  which(colnames(ref_dat) %in% names(study_estimates[[j]][[1]]) == TRUE)
                 disp[j] <- (1- ((nrow(ref_dat)-1)/nrow(ref_dat)*var(ref_dat[,col_ind] %*% study_estimates[[j]][[1]])))
             }
             # End of Calculating dispersion parameters by assuming the outcomes to have unit variance
@@ -395,7 +396,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
                     k_U <- k_U + length(col_ind)
                 }
                 Delta_hat <- (U %*% t(U))/(nrow(ref_dat))
-                C_new <- solve(Lambda_ref + Delta_hat, tol = 1e-06)
+                C_new <- solve(Lambda_ref + Delta_hat, tol = 1e-60)
                 asy_var_C_identity <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% C_new %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
                 beta_new_first <- solve(t(A_n1) %*% C_new %*% A_n1, tol = 1e-60)
                 beta_new_sec <- t(A_n1) %*% C_new %*% B_n1
