@@ -320,7 +320,10 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
         {
             # Calculating dispersion parameters by assuming the outcomes to have unit variance...
             study_indices <- seq(1,no_of_studies,1)
+            if(length(missing_covariance_study_indices) > 0)
             non_missing_covariance_study_indices <- study_indices[-which(study_indices %in% missing_covariance_study_indices)]
+            if(length(missing_covariance_study_indices) == 0)
+            non_missing_covariance_study_indices = study_indices
             disp <- rep(NA, no_of_studies)
             for(j in study_indices)
             {
