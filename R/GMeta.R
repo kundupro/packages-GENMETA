@@ -178,7 +178,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
         error_3 <- 1
     }
 
-    if(sum(temp != colnames(ref_dat)) > 0)
+    if(sum(is.na(match(temp, colnames(ref_dat)))) > 0)
     {
         print("names of covariates in the reference data does not match with that of the study specific covariates")
         error_4 <- 1
