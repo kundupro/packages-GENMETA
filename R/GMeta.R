@@ -59,7 +59,7 @@
 
 #GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control = list(epsilon = 1e-06, maxit = 1000))
 
-GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control = list(...))
+GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial_val=NULL, control = list(...))
 {
   #print("Computing in progress!")
   # optional_arguments <- list(...)
@@ -208,84 +208,89 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
     ## If the given inputs pass all the sanity checks...
     if(error_1 == 0 && error_2 == 0 && error_3 == 0 && error_4 == 0)
     {
-      # Calculating initial value when the different_intercept is TRUE
-      initial_val <- c()
-      if(different_intercept == TRUE)
+      
+      if(length(initial_val) == 0)
       {
-        initial_val <- c(initial_val, unlist(lapply(lapply(study_estimates, `[[`, 1), `[[`, 1)))
-
-        for(k in 1: length(names_wo_intercept))
+        initial_val <- c()
+        # Calculating initial value when the different_intercept is TRUE
+        if(different_intercept == TRUE)
         {
-          for(j in estimates_in_which_studies_indices[[k]])
+          initial_val <- c(initial_val, unlist(lapply(lapply(study_estimates, `[[`, 1), `[[`, 1)))
+          
+          for(k in 1: length(names_wo_intercept))
+          {
+            for(j in estimates_in_which_studies_indices[[k]])
+            {
+              if(is.null(study_estimates[[j]][[2]]) == F)
+              {
+                index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
+                weight <- 1/study_estimates[[j]][[2]][index_cov, index_cov]
+                weight_sum <- weight_sum + weight
+                sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
+              }
+              if(is.null(study_estimates[[j]][[2]]) == T)
+              {
+                index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
+                weight <- study_estimates[[j]][[3]]
+                weight_sum <- weight_sum + weight
+                sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
+              }
+            }
+            initial_val[k+length(study_estimates)] <- sum/weight_sum
+            weight_sum <- 0
+            sum <- 0
+          }
+        }
+        # End of Calculating initial value when the different_intercept is TRUE
+        
+        # Calculating initial value when the different_intercept is FALSE
+        if(different_intercept == F)
+        {
+          for(k in 1: length(names_wo_intercept))
+          {
+            for(j in estimates_in_which_studies_indices[[k]])
+            {
+              if(is.null(study_estimates[[j]][[2]]) == F)
+              {
+                index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
+                weight <- 1/study_estimates[[j]][[2]][index_cov, index_cov]
+                weight_sum <- weight_sum + weight
+                sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
+              }
+              if(is.null(study_estimates[[j]][[2]]) == T)
+              {
+                index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
+                weight <- study_estimates[[j]][[3]]
+                weight_sum <- weight_sum + weight
+                sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
+              }
+            }
+            initial_val[k+1] <- sum/weight_sum
+            weight_sum <- 0
+            sum <- 0
+          }
+          for(j in 1:no_of_studies)
           {
             if(is.null(study_estimates[[j]][[2]]) == F)
             {
-              index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
-              weight <- 1/study_estimates[[j]][[2]][index_cov, index_cov]
+              weight <- 1/study_estimates[[j]][[2]][1, 1]
               weight_sum <- weight_sum + weight
-              sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
+              sum <- sum + study_estimates[[j]][[1]][1]*weight
             }
             if(is.null(study_estimates[[j]][[2]]) == T)
             {
-              index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
               weight <- study_estimates[[j]][[3]]
               weight_sum <- weight_sum + weight
-              sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
+              sum <- sum + study_estimates[[j]][[1]][1]*weight
             }
           }
-          initial_val[k+length(study_estimates)] <- sum/weight_sum
-          weight_sum <- 0
-          sum <- 0
+          initial_val[1] <- sum/weight_sum
         }
+        # End of Calculating initial value when the different_intercept is FALSE
+        
+        # End of initial_val calculation
       }
-      # End of Calculating initial value when the different_intercept is TRUE
-
-      # Calculating initial value when the different_intercept is FALSE
-      if(different_intercept == F)
-      {
-        for(k in 1: length(names_wo_intercept))
-        {
-          for(j in estimates_in_which_studies_indices[[k]])
-          {
-            if(is.null(study_estimates[[j]][[2]]) == F)
-            {
-              index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
-              weight <- 1/study_estimates[[j]][[2]][index_cov, index_cov]
-              weight_sum <- weight_sum + weight
-              sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
-            }
-            if(is.null(study_estimates[[j]][[2]]) == T)
-            {
-              index_cov <- which(names(study_estimates[[j]][[1]]) %in% names_wo_intercept[k]  == T)
-              weight <- study_estimates[[j]][[3]]
-              weight_sum <- weight_sum + weight
-              sum <- sum + study_estimates[[j]][[1]][index_cov]*weight
-            }
-          }
-          initial_val[k+1] <- sum/weight_sum
-          weight_sum <- 0
-          sum <- 0
-        }
-        for(j in 1:no_of_studies)
-        {
-          if(is.null(study_estimates[[j]][[2]]) == F)
-          {
-            weight <- 1/study_estimates[[j]][[2]][1, 1]
-            weight_sum <- weight_sum + weight
-            sum <- sum + study_estimates[[j]][[1]][1]*weight
-          }
-          if(is.null(study_estimates[[j]][[2]]) == T)
-          {
-            weight <- study_estimates[[j]][[3]]
-            weight_sum <- weight_sum + weight
-            sum <- sum + study_estimates[[j]][[1]][1]*weight
-          }
-        }
-        initial_val[1] <- sum/weight_sum
-      }
-      # End of Calculating initial value when the different_intercept is FALSE
-
-      # End of initial_val calculation
+      
 
 
         ## Creating X_rbind and X_bdiag matrices
@@ -295,17 +300,18 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
             missing_covariance_study_indices = c(missing_covariance_study_indices, i)
         }
 
-
+        ## Defining X_rbind here
         X_rbind <- c()
         for(k in 1 : no_of_studies)
         {
             X_rbind <- rbind(X_rbind,ref_dat)
         }
+        ## Defining X_abdiag  here
         X_bdiag_list <- list()
         for(k in 1 : no_of_studies)
         {
             col_ind <-  which(colnames(ref_dat) %in% names(study_estimates[[k]][[1]]) == TRUE)
-            X_bdiag_list[[k]] <- ref_dat[,col_ind]
+            X_bdiag_list[[k]] <- as.matrix(ref_dat[,col_ind])
         }
         X_bdiag <- Reduce(magic::adiag,X_bdiag_list)
         ## End of Creating X_rbind and X_bdiag matrices
@@ -410,12 +416,20 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
             asy_var_opt <- solve(t(Gamma_hat) %*% C_new %*% Gamma_hat, tol = 1e-60)/nrow(ref_dat)
             beta_old_identity <- as.vector(beta_old_identity)
             names(beta_old_identity) <-  colnames(ref_dat)
-            colnames(asy_var_C_identity) <- colnames(ref_dat)
-            rownames(asy_var_C_identity) <- colnames(ref_dat)
+            if(is.null(asy_var_C_identity) == FALSE)
+            {
+              colnames(asy_var_C_identity) <- colnames(ref_dat)
+              rownames(asy_var_C_identity) <- colnames(ref_dat)
+            }
+            if(is.null(asy_var_opt) == FALSE)
+            {
+              colnames(asy_var_opt) <- colnames(ref_dat)
+              rownames(asy_var_opt) <- colnames(ref_dat)
+            }
+            
             beta_old <- as.vector(beta_old)
             names(beta_old) <- colnames(ref_dat)
-            colnames(asy_var_opt) <- colnames(ref_dat)
-            rownames(asy_var_opt) <- colnames(ref_dat)
+            
             linear_result <- list("Est.coeff" = beta_old, "Est.var.cov" = asy_var_opt, "Res.var" = disp_max_old, "iter" = no_of_iter, "call" = call_gmeta)
             class(linear_result) <- "GMeta"
             return(linear_result)
@@ -429,6 +443,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
                 C_init = diag(ncol(X_bdiag))
                 no_of_iter_outer = 0
                 total_iter = 0
+                #print(initial_val)
                 output_identity <- myoptim(no_of_studies, study_optim, ref_dat, X_rbind, X_bdiag_list, C_init, initial_val, threshold, model_optim, missing_covariance_study_indices, different_intercept, no_of_iter_outer)
                 beta_identity <- output_identity$beta_optim
                 beta_initial <- output_identity$beta_optim
@@ -436,61 +451,97 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control
                 total_iter_identity <- output_identity$iter_IRWLS
                 C_iter <- output_identity$C_optim
                 proceed <- TRUE
-                while (proceed)
+                mark_failure = 0
+                
+                if(sum(is.na(beta_identity)) > 0 || output_identity$Status == 0)
                 {
-                    #Define C with beta_initial
+                  #print("Jacobian is computationally singular or the algo didn't converge")
+                  beta_initial = rep(NA, ncol(ref_dat))
+                  asy_var_beta_converged = NULL
+                }else{
+                  
+                  while(proceed)
+                  {
                     no_of_iter_outer <- no_of_iter_outer + 1
-                    if(sum(is.na(beta_initial)) > 0)
-                    {
-                        break;
-                    }
-                    output_optim <- myoptim(no_of_studies, study_optim, ref_dat, X_rbind, X_bdiag, C_iter, beta_initial, threshold, model_optim, missing_covariance_study_indices, different_intercept, no_of_iter_outer)
+                    output_optim <- myoptim(no_of_studies, study_optim, ref_dat, X_rbind, X_bdiag_list, C_iter, beta_initial, threshold, model_optim, missing_covariance_study_indices, different_intercept, no_of_iter_outer)
                     beta_iter_old <- output_optim$beta_optim
                     C_iter <- output_optim$C_optim
+                    if(sum(is.na(beta_iter_old)) > 0 || output_optim$Status == 0)
+                    {
+                      mark_failure = 1
+                      break;
+                    }
                     eps_outer = sqrt(sum((beta_iter_old - beta_initial)^2))
                     total_iter <- output_optim$iter_IRWLS + no_of_iter_outer
                     #print(eps_outer)
                     beta_initial <- beta_iter_old
                     if(eps_outer < threshold)
-                    proceed <- FALSE
-                }
-                total_iter <- total_iter + total_iter_identity
-                if(sum(is.na(beta_initial)) > 0)
-                {
-                    asy_var_beta_converged <- NULL
-                }else{
-                    asy_var_beta_converged <- output_optim$Asy_var_optim
-                }
-
-                if(different_intercept == T)
-                {
-                  temp_name <- c()
-                  for(i in 1 : no_of_studies)
-                  {
-                    temp_name <- c(temp_name, paste0("(Intercept_Study_",i,")"))
+                      proceed <- FALSE
                   }
-                  temp_name <- c(temp_name, colnames(ref_dat[,-1]))
-                  beta_identity <- as.vector(beta_identity)
-                  names(beta_identity) <- temp_name
-                  beta_initial <- as.vector(beta_initial)
-                  names(beta_initial) <- temp_name
-                  colnames(asy_var_beta_converged_identity) <- temp_name
-                  rownames(asy_var_beta_converged_identity) <- temp_name
-                  colnames(asy_var_beta_converged) <- temp_name
-                  rownames(asy_var_beta_converged) <- temp_name
+                  
+                  total_iter <- total_iter + total_iter_identity
+                  if(mark_failure == 1)
+                  {
+                    asy_var_beta_converged <- NULL
+                  }else{
+                    asy_var_beta_converged <- output_optim$Asy_var_optim
+                    if(different_intercept == T)
+                    {
+                      temp_name <- c()
+                      for(i in 1 : no_of_studies)
+                      {
+                        temp_name <- c(temp_name, paste0("(Intercept_Study_",i,")"))
+                      }
+                      temp_name <- c(temp_name, colnames(ref_dat[,-1]))
+                      beta_identity <- as.vector(beta_identity)
+                      print(beta_initial)
+                      names(beta_identity) <- temp_name
+                      beta_initial <- as.vector(beta_initial)
+                      names(beta_initial) <- temp_name
+                      print(beta_initial)
+                      
+                      if(is.null(asy_var_beta_converged_identity) == FALSE)
+                      {
+                        colnames(asy_var_beta_converged_identity) <- temp_name
+                        rownames(asy_var_beta_converged_identity) <- temp_name
+                      }
+                      if(is.null(asy_var_beta_converged) == FALSE)
+                      {
+                        colnames(asy_var_beta_converged) <- temp_name
+                        rownames(asy_var_beta_converged) <- temp_name
+                      }
+                      
+                    }
+                    
+                    if(different_intercept == F)
+                    {
+                      beta_identity <- as.vector(beta_identity)
+                      names(beta_identity) <- colnames(ref_dat)
+                      beta_initial <- as.vector(beta_initial)
+                      names(beta_initial) <- colnames(ref_dat)
+                      if(is.null(asy_var_beta_converged_identity) == FALSE)
+                      {
+                        colnames(asy_var_beta_converged_identity) <- colnames(ref_dat)
+                        rownames(asy_var_beta_converged_identity) <- colnames(ref_dat)
+                      }
+                      if(is.null(asy_var_beta_converged) == FALSE)
+                      {
+                        colnames(asy_var_beta_converged) <- colnames(ref_dat)
+                        rownames(asy_var_beta_converged) <- colnames(ref_dat)
+                      }
+                      
+                    }
+                    
+                  }
+                  
+                  
                 }
+                
+                
+               
+               
 
-                if(different_intercept == F)
-                {
-                  beta_identity <- as.vector(beta_identity)
-                  names(beta_identity) <- colnames(ref_dat)
-                  beta_initial <- as.vector(beta_initial)
-                  names(beta_initial) <- colnames(ref_dat)
-                  colnames(asy_var_beta_converged_identity) <- colnames(ref_dat)
-                  rownames(asy_var_beta_converged_identity) <- colnames(ref_dat)
-                  colnames(asy_var_beta_converged) <- colnames(ref_dat)
-                  rownames(asy_var_beta_converged) <- colnames(ref_dat)
-                }
+                
 
                 logistic_result <- list("Est.coeff" = beta_initial, "Est.var.cov" = asy_var_beta_converged, "Res.var" = NA, "iter" = total_iter, "call" = call_gmeta)
                 class(logistic_result) <- "GMeta"

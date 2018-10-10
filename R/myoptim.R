@@ -5,6 +5,11 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
   study <- study_optim
   ref_dat <- ref_dat_optim
   threshold_optim <- threshold
+  status = 1
+  
+  #print(beta_old)
+  
+  X_abdiag = Reduce(magic::adiag,X_bdiag_list)
 
   ## Logistic regression with same intercepts
   if(different_intercept == FALSE)
@@ -17,6 +22,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
     Gamma_hat <- matrix(NA, nrow(C), ncol(ref_dat))
     while(continue)
     {
+      r = c()
       r_first <- c()
       r_second <- c()
       Dn_1 <- matrix(NA, ncol(ref_dat), nrow(C))
@@ -36,6 +42,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       e2 <- as.vector((exp(-ref_dat %*% beta_old) - 1)/(exp(-ref_dat %*% beta_old) + 1))
       e3 <- as.vector(1/(1 + exp(ref_dat %*% beta_old)))
       l <- e1*e2*e3
+      #print(class(l))
       nan_indices <- which(l %in% NaN == TRUE)
       l[nan_indices] <- 0
       L <- diag(l)
@@ -55,31 +62,63 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         #print(ncol_study)
         #print(class((r_first[[k]] - r_second[[k]])))
         Dn_1[,k_j: (k_j + ncol_study -1)] <- t(ref_dat) %*% W %*% ref_dat[, col_ind]
-        V <- c(V, t(r_first[[k]] - r_second[[k]]) %*% ref_dat[, col_ind] %*% t(ref_dat[, col_ind]) %*% L)
+        #V <- c(V, t(r_first[[k]] - r_second[[k]]) %*% ref_dat[, col_ind] %*% t(ref_dat[, col_ind]) %*% L)
         W_star_first_list[[k]] <- W %*% ref_dat[,col_ind]
         k_j <- k_j + ncol_study
+        r = c(r, (r_first[[k]] - r_second[[k]]))
       }
 
+      
       #print(dim(Dn_1))
       #print(length(Dn_2))
       Dn <- Dn_1 %*% C %*% Dn_2
-
+      
+      L = diag(rep(l, no_of_studies))
+      
+      V = as.vector(t(r) %*% X_abdiag %*% C %*% t(X_abdiag) %*% L)
+      #print(class(V))
       W_star_second <- diag(V)
 
       W_star_first <- Reduce(magic::adiag,W_star_first_list) %*% C %*% t(Reduce(magic::adiag,W_star_first_list))
+      #print(class(W_star_first))
       W_star <- W_star_first + W_star_second
 
+      # print(W_star_first)
+      # 
+      # if(is.symmetric.matrix(W_star_first) != TRUE)
+      #   print("W_star_first Not symmetric")
+      # 
+      # if(is.symmetric.matrix(W_star_first) != TRUE)
+      #   print("W_star_second Not symmetric")
+      # 
+      # if(is.symmetric.matrix(W_star) != TRUE)
+      #   print("W_star Not symmetric")
+      # 
+      # if(is.negative.definite(W_star, tol=1e-8) == TRUE)
+      #   print("W_star Negative definite")
       #Define Jacobian here
       J_n <- t(X_rbind) %*% W_star %*% X_rbind
+      # if(is.symmetric.matrix(J_n) != TRUE)
+      # {
+      #   print("J_n Not symmetric")
+      #   print(class(W_star))
+      #   print(class(X_rbind))
+      #   if(is.symmetric.matrix(W_star) != TRUE)
+      #     print("W_star Not symmetric")
+      # }
+        
       #print(class(J_n))
       #print(J_n)
       #print(is.nan(J_n_beta))
       #print(det(J_n))
       if(det(J_n) == 0)
-      { beta_old <- rep(NA, ncol(ref_dat))
-      break;
+      { 
+        beta_old <- rep(NA, ncol(ref_dat))
+        #print(det(J_n))
+        #print("The Jacobian is singular")
+        break;
       }
-      beta_new <- beta_old - (solve(J_n, tol = 1e-60) %*% Dn)
+      beta_new <- beta_old - (solve(J_n, tol=1e-60) %*% Dn)
       #print(D_n_beta_t)
       #print(beta_old)
       #print(beta_new)
@@ -89,8 +128,14 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       iter = iter + 1
       #print("Number of iterations \n")
       #print(iter)
-      if(eps_inner < threshold_optim || iter > 1000)
-        continue <- FALSE
+      if(eps_inner < threshold_optim || iter > 2000)
+      {
+         continue <- FALSE
+         if(iter >= 2000 && eps_inner >= threshold_optim)
+         {
+           status = 0
+         }
+      }
 
 
     }
@@ -135,6 +180,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       ## When all the estimates for var-cov are provided
       if(length(missing_covariance_study_indices) == 0)
       {
+        #print("all the estimates for var-cov are provided")
         for(k in 1 : no_of_studies)
         {
           col_ind <-  which(colnames(ref_dat) %in% names(study[[k]][[1]]) == TRUE)
@@ -178,9 +224,18 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         asy_var_opt = NULL
       }else{
         if(no_of_iter_outer == 1)
-          asy_var_opt <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% C_beta %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
+        {
+          if(det(t(Gamma_hat) %*% Gamma_hat) == 0)
+          {
+            asy_var_opt = NULL
+          }else{
+            asy_var_opt <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% (Lambda_ref + Delta_hat) %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
+          }
+        }
+          
         # Defining the asymptotic variance with optimal C here...
         asy_var_opt <- solve(info, tol = 1e-60)/nrow(ref_dat)
+        #print(asy_var_opt)
       }
     }
 
@@ -190,9 +245,9 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       C_beta = NULL
     }
 
-
+    #print(asy_var_opt)
     # Returning objects for the inner loop(NR method)
-    return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1))
+    return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1, "Status" = status))
   }
 
 
@@ -232,6 +287,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       #print(beta_k)
       r_first <- c()
       r_second <- c()
+      r <- c()
       Dn_1 <- matrix(NA, length(beta_old), nrow(C))
       Dn_2 <- c()
       W <- list()
@@ -277,17 +333,18 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         #print(ncol_study)
         #print(class((r_first[[k]] - r_second[[k]])))
         Dn_1[,k_j: (k_j + ncol_study -1)] <- t(X_rbind_star[k_j_star:(k_j_star + nrow(ref_dat) - 1), ]) %*% W[[k]] %*% ref_dat[, col_ind]
-        V <- c(V, t(r_first[[k]] - r_second[[k]]) %*% ref_dat[, col_ind] %*% t(ref_dat[, col_ind]) %*% L[[k]])
+        #V <- c(V, t(r_first[[k]] - r_second[[k]]) %*% ref_dat[, col_ind] %*% t(ref_dat[, col_ind]) %*% L[[k]])
         W_star_first_list[[k]] <- W[[k]] %*% ref_dat[,col_ind]
         k_j <- k_j + ncol_study
         k_j_star <- k_j_star + nrow(ref_dat)
+        r = c(r, (r_first[[k]] - r_second[[k]]))
       }
 
       #print(dim(Dn_1))
       #print(length(Dn_2))
       Dn <- Dn_1 %*% C %*% Dn_2
       #print(length(Dn))
-
+      V = as.vector(t(r) %*% X_abdiag %*% C %*% t(X_abdiag) %*% Reduce(magic::adiag,L))
       W_star_second <- diag(V)
 
       W_star_first <- Reduce(magic::adiag,W_star_first_list) %*% C %*% t(Reduce(magic::adiag,W_star_first_list))
@@ -313,8 +370,16 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       iter = iter + 1
       #print("Number of iterations \n")
       #print(iter)
-      if(eps_inner < threshold_optim || iter > 1000)
+      if(eps_inner < threshold_optim || iter > 2000)
+       {
+        
         continue <- FALSE
+        
+        if(iter >= 2000 && eps_inner >= threshold_optim)
+        {
+          status = 0
+        }
+      } 
 
 
     }
@@ -413,7 +478,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         asy_var_opt = NULL
       }else{
         if(no_of_iter_outer == 1)
-          asy_var_opt <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% C_beta %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
+          asy_var_opt <- (solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60) %*% (t(Gamma_hat) %*% (Lambda_ref + Delta_hat) %*% Gamma_hat) %*% solve(t(Gamma_hat) %*% Gamma_hat, tol = 1e-60))/(nrow(ref_dat))
         asy_var_opt <- solve(info, tol = 1e-60)/nrow(ref_dat)
       }
 
@@ -428,8 +493,8 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
     #print(class(info))
     #asy_var_beta <- (solve(info, tol = 1e-30))/nrow(ref_dat)
     #asy_var_beta <- diag(3)
-    #print(asy_var_beta)
-    return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1))
+    #print(asy_var_opt)
+    return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1, "Status" = status))
   }
 
 }
