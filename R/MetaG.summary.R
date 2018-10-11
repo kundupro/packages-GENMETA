@@ -1,10 +1,11 @@
 #' Summarizing Generalized Meta Analysis
 #'
-#' This function prints the summary of GMeta results.
-#' @param object an object of class "GMeta"
+#' This function prints the summary of MetaG results.
+#' @param object an object of class "MetaG"
 #' @param signi_digits an optional numeric indicating the number of significant digits to be shown in the summary. Default is 3.
+#' @import MASS
 #' @examples
-#' # This example shows how to obtain the summary of GMeta object.
+#' # This example shows how to obtain the summary of MetaG object.
 #' #####
 #' ### Basic setting
 #' #####
@@ -34,11 +35,11 @@
 #' sim=1
 #' set.seed(sim)
 # Generate the reference data set
-#' X.rf = mvrnorm(n = n, mu, Sigma)
+#' X.rf = MASS::mvrnorm(n = n, mu, Sigma)
 
 
 # Generate data set 1. m1 means model 1.
-#' X.m1 = mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
+#' X.m1 = MASS::mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
 #' X.m1.1 = cbind(rep(1, n1), X.m1) # Add a column of 1's to X.m1.
 #' p.m1 = 1/(1+exp(-X.m1.1%*%beta.star)) # the vector of probabilities
 #' Y.m1 = rbinom(n1, size=1, p.m1) # the Bernoulli responses
@@ -47,13 +48,13 @@
 #' # print(mean(p.m1))
 
 #' # Generate data set 2. m1 means model 2.
-#' X.m2 = mvrnorm(n = n2, mu, Sigma)
+#' X.m2 = MASS::mvrnorm(n = n2, mu, Sigma)
 #' X.m2.1 = cbind(rep(1, n2), X.m2)
 #' p.m2 = 1/(1+exp(-X.m2.1%*%beta.star))
 #' Y.m2 = rbinom(n2, size=1, p.m2)
 
 # Generate data set 3. m1 means model 3.
-#' X.m3 = mvrnorm(n = n3, mu, Sigma)
+#' X.m3 = MASS::mvrnorm(n = n3, mu, Sigma)
 #' X.m3.1 = cbind(rep(1, n3), X.m3)
 #' p.m3 = 1/(1+exp(-X.m3.1%*%beta.star))
 #' Y.m3 = rbinom(n3, size=1, p.m3)
@@ -197,7 +198,7 @@
 #' names(theta.m2)=c("(Intercept)","Height", "Weight")
 #' names(theta.m3)=c("(Intercept)","Age", "Weight")
 
-###now put in the GMeta example
+###now put in the MetaG example
 
 #' study1 = list(Coeff=theta.m1,Covariance=Sigma.m1,Sample_size=n1)
 #' study2 = list(Coeff=theta.m2,Covariance=Sigma.m2,Sample_size=n2)
@@ -208,14 +209,14 @@
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' result.same = GMeta(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-#' GMeta.summary(result.same)
+#' result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+#' MetaG.summary(result.same)
 #' @export
-# summary.GMeta <-function(object, ...){
+# summary.MetaG <-function(object, ...){
 #   UseMethod("summary")
 #   NextMethod("generic = NULL, object = NULL", ...)
 # }
-GMeta.summary <- function(object, signi_digits = 3)
+MetaG.summary <- function(object, signi_digits = 3)
 {
   x <- object
   GMeta_opt_estimate <- as.vector(x[[1]])

@@ -1,8 +1,8 @@
-\name{GMeta}
-\alias{GMeta}
+\name{MetaG}
+\alias{MetaG}
 \title{Implementing Generalized Meta-analysis}
 \usage{
-  GMeta(study_info, ref_dat, model,
+  MetaG(study_info, ref_dat, model,
     variable_intercepts = FALSE, initial_val = NULL,
     control = list(...))
 }
@@ -49,22 +49,22 @@
   (numeric) and maxiter (numeric) needed for convergence of
   the algorithm. Default epsilon and maximum iterations are
   1e-06 and 1000, respectively. For creating a control
-  argument for GMeta, see
-  \code{\link[GMeta]{GMeta.control}}.}
+  argument for MetaG, see
+  \code{\link[MetaG]{MetaG.control}}.}
 }
 \value{
-  An object of class "GMeta" is a list containing GMeta
+  An object of class "MetaG" is a list containing MetaG
   estimate, its variance-covariance matrix and estimates
   the residual variance in the case of "linear" model .
   \item{Est.coeff}{a numeric vector containing the
   estimated regression coefficients of the maximal model
   using optimal weighting matrix.} \item{Est.var.cov}{a
   matrix containing estimate of variance-covariance matrix
-  of the corresponding GMeta estimator.} \item{Res.var}{a
+  of the corresponding MetaG estimator.} \item{Res.var}{a
   numeric containing the residual variance of the maximal
   model when it is linear. It is calculated from the
   formula : \eqn{1 -
-  \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is
+  \hat{\beta}_{MetaG}^Tvar(X)\hat{\beta}_{MetaG}} which is
   derived by assuming the outcomes to have unit variance.
   \eqn{var(X)} is calculated from reference data. Res.var
   is NA when the model is "logistic".} \item{iter}{a
@@ -76,11 +76,11 @@
   combining information on multivariate regression
   parameters across multiple different studies which have
   different, but, possibly overlapping information on
-  subsets of covariates. GMeta implements the generalized
+  subsets of covariates. MetaG implements the generalized
   meta-analysis using IRWLS algorithm.
 }
 \details{
-  Generalized Meta-analysis (GMeta) is a tool that allows
+  Generalized Meta-analysis (MetaG) is a tool that allows
   researchers to quickly build models for multivariate
   meta-analysis in the presence of disparate covariate
   information across studies. It is implemented based on
@@ -94,12 +94,12 @@
   variable_intercepts. It also allows estimation of the
   regression parameters, only from the sample sizes of the
   studies when it is difficult to obtain estimate of the
-  variance-covariance matrices. \cr \cr \bold{Note}: GMeta
+  variance-covariance matrices. \cr \cr \bold{Note}: MetaG
   will not work if both the estimates of the covariance
   matrix and the sample size are NULL.
 }
 \examples{
-# This example shows the GMeta implementation on a simulated data set for logistic regression
+# This example shows the MetaG implementation on a simulated data set for logistic regression
 #####
 ### Basic setting
 #####
@@ -123,8 +123,8 @@ n3 = 1000 # 3rd
 n = 50
 sim=1
 set.seed(sim)
-X.rf = mvrnorm(n = n, mu, Sigma)
-X.m1 = mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
+X.rf = MASS::mvrnorm(n = n, mu, Sigma)
+X.m1 = MASS::mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
 X.m1.1 = cbind(rep(1, n1), X.m1) # Add a column of 1's to X.m1.
 p.m1 = 1/(1+exp(-X.m1.1\%*\%beta.star)) # the vector of probabilities
 Y.m1 = rbinom(n1, size=1, p.m1) # the Bernoulli responses
@@ -132,11 +132,11 @@ Y.m1 = rbinom(n1, size=1, p.m1) # the Bernoulli responses
 # print(mean(Y.m1))
 # print(mean(p.m1))
 # Generate data set 2. m1 means model 2.
-X.m2 = mvrnorm(n = n2, mu, Sigma)
+X.m2 = MASS::mvrnorm(n = n2, mu, Sigma)
 X.m2.1 = cbind(rep(1, n2), X.m2)
 p.m2 = 1/(1+exp(-X.m2.1\%*\%beta.star))
 Y.m2 = rbinom(n2, size=1, p.m2)
-X.m3 = mvrnorm(n = n3, mu, Sigma)
+X.m3 = MASS::mvrnorm(n = n3, mu, Sigma)
 X.m3.1 = cbind(rep(1, n3), X.m3)
 p.m3 = 1/(1+exp(-X.m3.1\%*\%beta.star))
 Y.m3 = rbinom(n3, size=1, p.m3)
@@ -244,7 +244,7 @@ studies = list(study1,study2,study3)
 model = "logistic"
 reference = cbind(rep(1,n), X.rf)
 colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-result.same = GMeta(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
 }
 \author{
   Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
@@ -257,7 +257,7 @@ result.same = GMeta(studies, reference, model, initial_val = c(-1.2, log(1.3), l
   [stat.ME]}.
 }
 \seealso{
-  \code{\link[GMeta]{GMeta.summary}}.
+  \code{\link[MetaG]{MetaG.summary}}.
 }
 \keyword{Analysis}
 \keyword{Generalized}

@@ -1,7 +1,7 @@
 #' Implementing Generalized Meta-analysis
 #'
 #' Generalized Meta-analysis(GMeta) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates.
-#' GMeta implements the generalized meta-analysis using IRWLS algorithm.
+#' MetaG implements the generalized meta-analysis using IRWLS algorithm.
 #' @param study_info a list of lists containing information about the studies; the main list contains a list for each study, which must have the fields:
 #' \itemize{
 #' \item{"Coeff": a named numeric vector containing the estimates of regression parameters (including intercept) where the names identify the covariates. For example, names(study_info$Coeff) <- c("(Intercept)", "Age", "Height", "Weight").}
@@ -12,27 +12,27 @@
 #' @param model a description of the type of regression model; this is a character string naming the regression model. The current version is for "logistic" and "linear".
 #' @param variable_intercepts an optional logical (applicable only when the model is "logistic"); if TRUE, the intercepts of the true models for each of the studies are assumed to be different. Default is FALSE.
 #' @param initial_val an optional numeric vector containing initial values for the parameters. This is used as a starting value in the optimiziation. Default is NULL, in which the initial value is calculated by meta-analysis of each of the parameter estimates across studies.
-#' @param control an optional list containing the epsilon (numeric) and maxiter (numeric) needed for convergence of the algorithm. Default epsilon and maximum iterations are 1e-06 and 1000, respectively. For creating a control argument for GMeta, see \code{\link[GMeta]{GMeta.control}}.
-#' @details Generalized Meta-analysis (GMeta) is a tool that allows researchers to quickly build models for multivariate meta-analysis in the presence of disparate covariate information across studies. It is implemented based on mainly two input arguments:
+#' @param control an optional list containing the epsilon (numeric) and maxiter (numeric) needed for convergence of the algorithm. Default epsilon and maximum iterations are 1e-06 and 1000, respectively. For creating a control argument for MetaG, see \code{\link[MetaG]{MetaG.control}}.
+#' @details Generalized Meta-analysis (MetaG) is a tool that allows researchers to quickly build models for multivariate meta-analysis in the presence of disparate covariate information across studies. It is implemented based on mainly two input arguments:
 #' \itemize{
 #' \item{Information on the model parameters from each of the studies.}
 #' \item{Reference data for estimation of the joint distribution of all the distinct covariates across studies.}}
 #' The software provides flexibility to the users to choose the intercepts to be different (when the model is logistic) across studies through the input argument, variable_intercepts.
 #' It also allows estimation of the regression parameters, only from the sample sizes of the studies when it is difficult to obtain estimate of the variance-covariance matrices.
-#' \cr \cr \bold{Note}: GMeta will not work if both the estimates of the covariance matrix and the sample size are NULL.
+#' \cr \cr \bold{Note}: MetaG will not work if both the estimates of the covariance matrix and the sample size are NULL.
 #' @details When the model is "linear", it is assumed that the outcome is standardized to have unit variance.
 #' For more details on the IRWLS, see References.
-#' @return An object of class "GMeta" is a list containing GMeta estimate, its variance-covariance matrix and estimates the residual variance in the case of "linear" model .
+#' @return An object of class "MetaG" is a list containing MetaG estimate, its variance-covariance matrix and estimates the residual variance in the case of "linear" model .
 #' \item{Est.coeff}{a numeric vector containing the estimated regression coefficients of the maximal model using optimal weighting matrix.}
-#' \item{Est.var.cov}{a matrix containing estimate of variance-covariance matrix of the corresponding GMeta estimator.}
-#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GMeta}^Tvar(X)\hat{\beta}_{GMeta}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
+#' \item{Est.var.cov}{a matrix containing estimate of variance-covariance matrix of the corresponding MetaG estimator.}
+#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{MetaG}^Tvar(X)\hat{\beta}_{MetaG}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
 #' \item{iter}{a numeric containing the number of iterations used in the algorithm}
 #' \item{call}{the matched call}
 #' @keywords Generalized Meta Analysis
 #' @references Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. \href{https://arxiv.org/abs/1708.03818}{arXiv:1708.03818v1 [stat.ME]}.
-#' @seealso \code{\link[GMeta]{GMeta.summary}}.
+#' @seealso \code{\link[MetaG]{MetaG.summary}}.
 #' @examples
-#' # This example shows the GMeta implementation on a simulated data set for logistic regression
+#' # This example shows the MetaG implementation on a simulated data set for logistic regression
 #' #####
 #' ### Basic setting
 #' #####
@@ -62,11 +62,11 @@
 #' sim=1
 #' set.seed(sim)
 # Generate the reference data set
-#' X.rf = mvrnorm(n = n, mu, Sigma)
+#' X.rf = MASS::mvrnorm(n = n, mu, Sigma)
 
 
 # Generate data set 1. m1 means model 1.
-#' X.m1 = mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
+#' X.m1 = MASS::mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
 #' X.m1.1 = cbind(rep(1, n1), X.m1) # Add a column of 1's to X.m1.
 #' p.m1 = 1/(1+exp(-X.m1.1%*%beta.star)) # the vector of probabilities
 #' Y.m1 = rbinom(n1, size=1, p.m1) # the Bernoulli responses
@@ -75,13 +75,13 @@
 #' # print(mean(p.m1))
 
 #' # Generate data set 2. m1 means model 2.
-#' X.m2 = mvrnorm(n = n2, mu, Sigma)
+#' X.m2 = MASS::mvrnorm(n = n2, mu, Sigma)
 #' X.m2.1 = cbind(rep(1, n2), X.m2)
 #' p.m2 = 1/(1+exp(-X.m2.1%*%beta.star))
 #' Y.m2 = rbinom(n2, size=1, p.m2)
 
 # Generate data set 3. m1 means model 3.
-#' X.m3 = mvrnorm(n = n3, mu, Sigma)
+#' X.m3 = MASS::mvrnorm(n = n3, mu, Sigma)
 #' X.m3.1 = cbind(rep(1, n3), X.m3)
 #' p.m3 = 1/(1+exp(-X.m3.1%*%beta.star))
 #' Y.m3 = rbinom(n3, size=1, p.m3)
@@ -225,7 +225,7 @@
 #' names(theta.m2)=c("(Intercept)","Height", "Weight")
 #' names(theta.m3)=c("(Intercept)","Age", "Weight")
 
-###now put in the GMeta example
+###now put in the MetaG example
 
 #' study1 = list(Coeff=theta.m1,Covariance=Sigma.m1,Sample_size=n1)
 #' study2 = list(Coeff=theta.m2,Covariance=Sigma.m2,Sample_size=n2)
@@ -236,7 +236,7 @@
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' result.same = GMeta(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+#' result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
 
 #' @author Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
 #' @import magic
@@ -249,9 +249,9 @@
 
 #Definition of Gmeta function
 
-#GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control = list(epsilon = 1e-06, maxit = 1000))
+#MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control = list(epsilon = 1e-06, maxit = 1000))
 
-GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial_val=NULL, control = list(...))
+MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial_val=NULL, control = list(...))
 {
   #print("Computing in progress!")
   # optional_arguments <- list(...)
@@ -274,7 +274,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
  #  }
   # if(missing(control))
   # {
-  #   control <- GMeta.control()
+  #   control <- MetaG.control()
   #   threshold <- control[[1]]
   #   maxit <- control[[2]]
   # }
@@ -286,9 +286,9 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
   ## Checking if the control argument is missing
   if(missing(control))
   {
-    control <- GMeta.control()
+    control <- MetaG.control()
   }else{
-    control <- do.call("GMeta.control", control)
+    control <- do.call("MetaG.control", control)
   }
   threshold <- control[[1]]
   maxit <- control[[2]]
@@ -623,7 +623,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
             names(beta_old) <- colnames(ref_dat)
             
             linear_result <- list("Est.coeff" = beta_old, "Est.var.cov" = asy_var_opt, "Res.var" = disp_max_old, "iter" = no_of_iter, "call" = call_gmeta)
-            class(linear_result) <- "GMeta"
+            class(linear_result) <- "MetaG"
             return(linear_result)
 
         }
@@ -736,7 +736,7 @@ GMeta <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
                 
 
                 logistic_result <- list("Est.coeff" = beta_initial, "Est.var.cov" = asy_var_beta_converged, "Res.var" = NA, "iter" = total_iter, "call" = call_gmeta)
-                class(logistic_result) <- "GMeta"
+                class(logistic_result) <- "MetaG"
                 return(logistic_result)
 
         }

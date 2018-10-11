@@ -6,9 +6,9 @@
 #' @param maxit a positive numeric indicating the maximum number of iterations to be used in the algorithm. Default is 1000.
 #' @return A list with components named as the arguments.
 #' @examples
-#' control <- GMeta.control(1e-08, 100)
+#' control <- MetaG.control(1e-08, 100)
 #' @export
-GMeta.control <- function(epsilon = 1e-06, maxit = 1000)
+MetaG.control <- function(epsilon = 1e-06, maxit = 1000)
 {
   return(list(epsilon = epsilon, maxit = maxit))
 }

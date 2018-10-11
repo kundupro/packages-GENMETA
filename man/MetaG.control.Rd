@@ -1,8 +1,8 @@
-\name{GMeta.control}
-\alias{GMeta.control}
+\name{MetaG.control}
+\alias{MetaG.control}
 \title{Auxiliary for controlling the IRWLS algorithm}
 \usage{
-  GMeta.control(epsilon = 1e-06, maxit = 1000)
+  MetaG.control(epsilon = 1e-06, maxit = 1000)
 }
 \arguments{
   \item{epsilon}{a positive numeric indicating converegence
@@ -26,6 +26,6 @@
   function
 }
 \examples{
-control <- GMeta.control(1e-08, 100)
+control <- MetaG.control(1e-08, 100)
 }
 

@@ -1,17 +1,14 @@
 Package: MetaG
-Title: Implements generalized meta-analysis
+Title: Implements Generalized Meta-analysis
 Version: 0.1
-Author: Prosenjit Kundu [aut, cre], Runlong Tang [aut], Nilanjan Chatterjee
-    [aut]
-Maintainer: Prosenjit Kundu <pkundu@jhu.edu>
-Description: GMeta implements the generalized meta-analysis using IRWLS
-    algorithm.
+Authors@R: c(person("Prosenjit", "Kundu", role = c("aut", "cre"),
+    email = "pkundu@jhu.edu"),
+    person("Runlong", "Tang", role = "aut"),
+    person("Nilanjan", "Chatterjee", role = "aut"))
+Description: This package implements the generalized meta-analysis using
+    iterated-reweighted least square algorithm.
 Depends:
-    R (>= 2.15.3),
-    MASS,
-    magic,
-    graphics,
-    stats
+    R (>= 2.15.3)
 Imports:
     MASS,
     magic,
@@ -22,8 +19,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1.9000
 Collate:
-    'GMeta.R'
-    'GMeta.control.R'
-    'GMeta.summary.R'
     'myoptim.R'
     'sign.star.R'
+    'MetaG.R'
+    'MetaG.control.R'
+    'MetaG.summary.R'

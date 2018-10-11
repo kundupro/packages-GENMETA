@@ -1,21 +1,21 @@
-\name{GMeta.summary}
-\alias{GMeta.summary}
+\name{MetaG.summary}
+\alias{MetaG.summary}
 \title{Summarizing Generalized Meta Analysis}
 \usage{
-  GMeta.summary(object, signi_digits = 3)
+  MetaG.summary(object, signi_digits = 3)
 }
 \arguments{
-  \item{object}{an object of class "GMeta"}
+  \item{object}{an object of class "MetaG"}
 
   \item{signi_digits}{an optional numeric indicating the
   number of significant digits to be shown in the summary.
   Default is 3.}
 }
 \description{
-  This function prints the summary of GMeta results.
+  This function prints the summary of MetaG results.
 }
 \examples{
-# This example shows how to obtain the summary of GMeta object.
+# This example shows how to obtain the summary of MetaG object.
 #####
 ### Basic setting
 #####
@@ -39,8 +39,8 @@ n3 = 1000 # 3rd
 n = 50
 sim=1
 set.seed(sim)
-X.rf = mvrnorm(n = n, mu, Sigma)
-X.m1 = mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
+X.rf = MASS::mvrnorm(n = n, mu, Sigma)
+X.m1 = MASS::mvrnorm(n = n1, mu, Sigma) # Generate the covariates.
 X.m1.1 = cbind(rep(1, n1), X.m1) # Add a column of 1's to X.m1.
 p.m1 = 1/(1+exp(-X.m1.1\%*\%beta.star)) # the vector of probabilities
 Y.m1 = rbinom(n1, size=1, p.m1) # the Bernoulli responses
@@ -48,11 +48,11 @@ Y.m1 = rbinom(n1, size=1, p.m1) # the Bernoulli responses
 # print(mean(Y.m1))
 # print(mean(p.m1))
 # Generate data set 2. m1 means model 2.
-X.m2 = mvrnorm(n = n2, mu, Sigma)
+X.m2 = MASS::mvrnorm(n = n2, mu, Sigma)
 X.m2.1 = cbind(rep(1, n2), X.m2)
 p.m2 = 1/(1+exp(-X.m2.1\%*\%beta.star))
 Y.m2 = rbinom(n2, size=1, p.m2)
-X.m3 = mvrnorm(n = n3, mu, Sigma)
+X.m3 = MASS::mvrnorm(n = n3, mu, Sigma)
 X.m3.1 = cbind(rep(1, n3), X.m3)
 p.m3 = 1/(1+exp(-X.m3.1\%*\%beta.star))
 Y.m3 = rbinom(n3, size=1, p.m3)
@@ -160,7 +160,7 @@ studies = list(study1,study2,study3)
 model = "logistic"
 reference = cbind(rep(1,n), X.rf)
 colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-result.same = GMeta(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-GMeta.summary(result.same)
+result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+MetaG.summary(result.same)
 }
 
