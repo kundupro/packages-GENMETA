@@ -8,8 +8,8 @@ This file provides guidelines for implementing generalized meta-analysis(GMeta)
 STEP:1  
 Install the package from github by typing the following in R console:  
 
-required.packages <- c("MASS", "stats", "devtools", "magic")  
-new.packages <- required.packages\[!(required.packages %in% installed.packages()\[,"Package"\])\]  
+required.packages = c("MASS", "stats", "devtools", "magic")  
+new.packages = required.packages\[!(required.packages %in% installed.packages()\[,"Package"\])\]  
 if(length(new.packages)) install.packages(new.packages, dependencies = TRUE)  
 
 library("devtools")  
