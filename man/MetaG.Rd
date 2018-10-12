@@ -4,7 +4,7 @@
 \usage{
   MetaG(study_info, ref_dat, model,
     variable_intercepts = FALSE, initial_val = NULL,
-    control = list(...))
+    control = list(epsilon = 1e-06, maxit = 1000))
 }
 \arguments{
   \item{study_info}{a list of lists containing information
@@ -40,16 +40,16 @@
   are assumed to be different. Default is FALSE.}
 
   \item{initial_val}{an optional numeric vector containing
-  initial values for the parameters. This is used as a
-  starting value in the optimiziation. Default is NULL, in
-  which the initial value is calculated by meta-analysis of
-  each of the parameter estimates across studies.}
+  initial values for the full model parameters which is
+  needed for the IRWLS algorithm. Default is set to the one
+  obtained from standard meta-analysis of the available
+  estimates for each of the parameters across studies.}
 
   \item{control}{an optional list containing the epsilon
-  (numeric) and maxiter (numeric) needed for convergence of
-  the algorithm. Default epsilon and maximum iterations are
-  1e-06 and 1000, respectively. For creating a control
-  argument for MetaG, see
+  (positive numeric) and maxiter (positive number) needed
+  for convergence of the algorithm. Default epsilon and
+  maximum iterations are 1e-06 and 1000, respectively. For
+  creating a control argument for MetaG, see
   \code{\link[MetaG]{MetaG.control}}.}
 }
 \value{
@@ -69,7 +69,12 @@
   \eqn{var(X)} is calculated from reference data. Res.var
   is NA when the model is "logistic".} \item{iter}{a
   numeric containing the number of iterations used in the
-  algorithm} \item{call}{the matched call}
+  algorithm} \item{call}{the matched call} \cr The function
+  \code{\link[MetaG]{MetaG.summary}} prints a summary of
+  the results obtained from MetaG. \cr The function
+  \code{\link[MetaG]{MetaG.plot}} plots the estimate of the
+  parameter from each of the studies, the summary
+  measure(MetaG estimate) and their confidence intervals.
 }
 \description{
   Generalized Meta-analysis(GMeta) is an approach for
@@ -99,10 +104,10 @@
   matrix and the sample size are NULL.
 }
 \examples{
-# This example shows the MetaG implementation on a simulated data set for logistic regression
-#####
-### Basic setting
-#####
+# This example shows how to create the inputs MetaG and then implement generalized meta-analysis
+#########################
+### Basic setting #######
+#########################
 d.X = 3 # number of covariates.
 mu = matrix(rep(0,d.X), nrow=d.X) # mean vector of the covariates.
 r1 = 0.3 # correlation coefficient of the covariates.
@@ -245,6 +250,7 @@ model = "logistic"
 reference = cbind(rep(1,n), X.rf)
 colnames(reference) = c("(Intercept)","Age","Height", "Weight")
 result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+MetaG.summary(result.same)
 }
 \author{
   Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
@@ -257,7 +263,8 @@ result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), l
   [stat.ME]}.
 }
 \seealso{
-  \code{\link[MetaG]{MetaG.summary}}.
+  \code{\link[MetaG]{MetaG.summary}},
+  \code{\link[MetaG]{MetaG.plot}}.
 }
 \keyword{Analysis}
 \keyword{Generalized}

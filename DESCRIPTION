@@ -24,3 +24,4 @@ Collate:
     'MetaG.R'
     'MetaG.control.R'
     'MetaG.summary.R'
+    'MetaG.plot.R'
