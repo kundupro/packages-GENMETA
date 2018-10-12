@@ -4,6 +4,7 @@
 #' It is demonstrated using a different dataset, "study_info_plot", which meets the assumption.
 #' @param x an object of class "MetaG"
 #' @param study_info_plot a list of lists containing information about the studies(similar to the study_info argument used in MetaG function.)
+#' @import graphics
 #' @examples
 #' # This example shows how to obtain the forest plot of MetaG object.
 #' #########################
@@ -23,7 +24,7 @@
 #'   ncol=d.X) # covariance matrix of the covariates.
 
 
-#' beta.star = matrix(c(-1.2, log(1.3), log(1.3), log(1.3)),nrow = d.X+1) # beta.star
+#' beta.star = matrix(c(-1.2, log(1.3), log(1.3), log(1.3)),nrow = d.X+1) 
 #' #beta.star = matrix(c(-1.2, 0.26, 0.26, 0.26),nrow = d.X+1) # beta.star
 #' #beta.star = matrix(c(-3, 1, 2, 3),nrow = d.X+1) # beta.star
 

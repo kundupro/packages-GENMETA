@@ -1,24 +1,23 @@
 Package: MetaG
-Title: Implements Generalized Meta-analysis
+Title: Implements Generalized Meta-Analysis
 Version: 0.1
 Authors@R: c(person("Prosenjit", "Kundu", role = c("aut", "cre"),
     email = "pkundu@jhu.edu"),
     person("Runlong", "Tang", role = "aut"),
     person("Nilanjan", "Chatterjee", role = "aut"))
-Description: This package implements the generalized meta-analysis using
+Description: Generalized meta-analysis using
     iterated-reweighted least square algorithm.
 Depends:
-    R (>= 2.15.3)
-Imports:
+    R (>= 2.15.3),
     MASS,
-    magic,
-    graphics,
-    stats,
-    Matrix
+    graphics
+Imports:
+    Matrix,
+    magic
 License: GPL
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.0
 Collate:
     'myoptim.R'
     'sign.star.R'

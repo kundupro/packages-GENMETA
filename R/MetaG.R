@@ -238,16 +238,16 @@
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' result.same.intercepts = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-#' result.different.intercepts = MetaG(studies, reference, model, variable_intercepts=TRUE)
+#' same.inter = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+#' diff.inter = MetaG(studies, reference, model, variable_intercepts=TRUE)
 
 
 #' @author Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
-#' @import magic
+#' @importFrom magic adiag
 #' @import MASS
 #' @import stats
 #' @import graphics
-#' @import Matrix
+#' @importFrom Matrix rankMatrix
 #' @export
 #library(magic)
 #library(MASS)

@@ -4,6 +4,7 @@
 #' @param object an object of class "MetaG"
 #' @param signi_digits an optional numeric indicating the number of significant digits to be shown in the summary. Default is 3.
 #' @import MASS
+#' @importFrom Matrix rankMatrix
 #' @examples
 #' # This example shows how to obtain the summary of MetaG object.
 #' #####

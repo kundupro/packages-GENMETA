@@ -35,7 +35,7 @@ Sigma = matrix(
     r2, r3, 1),
   nrow=d.X,
   ncol=d.X) # covariance matrix of the covariates.
-beta.star = matrix(c(-1.2, log(1.3), log(1.3), log(1.3)),nrow = d.X+1) # beta.star
+beta.star = matrix(c(-1.2, log(1.3), log(1.3), log(1.3)),nrow = d.X+1)
 #beta.star = matrix(c(-1.2, 0.26, 0.26, 0.26),nrow = d.X+1) # beta.star
 #beta.star = matrix(c(-3, 1, 2, 3),nrow = d.X+1) # beta.star
 n1 = 300 # sample size of the 1st data set.

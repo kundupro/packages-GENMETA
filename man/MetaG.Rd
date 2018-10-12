@@ -249,8 +249,8 @@ studies = list(study1,study2,study3)
 model = "logistic"
 reference = cbind(rep(1,n), X.rf)
 colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-result.same.intercepts = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-result.different.intercepts = MetaG(studies, reference, model, variable_intercepts=TRUE)
+same.inter = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+diff.inter = MetaG(studies, reference, model, variable_intercepts=TRUE)
 }
 \author{
   Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
