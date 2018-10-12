@@ -11,7 +11,7 @@
 #' @param ref_dat a data matrix containing all the distinct covariates across studies from a reference set of individuals. This is used for estimating joint distribution of the covariates. The data matrix must have the vector of ones as its first column. The column names of the data matrix should match the names of the covariates from the studies.
 #' @param model a description of the type of regression model; this is a character string naming the regression model. The current version is for "logistic" and "linear".
 #' @param variable_intercepts an optional logical (applicable only when the model is "logistic"); if TRUE, the intercepts of the true models for each of the studies are assumed to be different. Default is FALSE.
-#' @param initial_val an optional numeric vector containing initial values for the full model parameters which is needed for the IRWLS algorithm. Default is set to the one obtained from standard meta-analysis of the available estimates for each of the parameters across studies.
+#' @param initial_val an optional numeric vector containing initial values for the maximal model parameters which is needed for the IRWLS algorithm. Default is set to the one obtained from standard meta-analysis of the available estimates for each of the parameters across studies.
 #' @param control an optional list containing the epsilon (positive numeric) and maxiter (positive number) needed for convergence of the algorithm. Default epsilon and maximum iterations are 1e-06 and 1000, respectively. For creating a control argument for MetaG, see \code{\link[MetaG]{MetaG.control}}.
 #' @details Generalized Meta-analysis (MetaG) is a tool that allows researchers to quickly build models for multivariate meta-analysis in the presence of disparate covariate information across studies. It is implemented based on mainly two input arguments:
 #' \itemize{
@@ -367,7 +367,7 @@ MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
 
     if(ncol(ref_dat) < length(temp))
     {
-        print("number of covariates in the reference data does not match with that of the full model")
+        print("number of covariates in the reference data does not match with that of the maximal model")
         error_3 <- 1
     }
 

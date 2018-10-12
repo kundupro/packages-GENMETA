@@ -2,10 +2,10 @@
 #'
 #' This function plots the confidence intervals with boxes as the study specific estimates and diamond as the GMeta estimate. For the current version, it assumes that the estimate of the variance-covariance matrix in each of the studies is provided.
 #' It is demonstrated using a different dataset, "study_info_plot", which meets the assumption.
-#' @param x an object of class "GMeta"
-#' @param study_info_plot a list of lists containing information about the studies(similar to the study_info argument used in GMeta function.)
+#' @param x an object of class "MetaG"
+#' @param study_info_plot a list of lists containing information about the studies(similar to the study_info argument used in MetaG function.)
 #' @examples
-#' # This example shows how to obtain the forest plot of GMeta object.
+#' # This example shows how to obtain the forest plot of MetaG object.
 #' #########################
 #' ### Basic setting #######
 #' #########################
