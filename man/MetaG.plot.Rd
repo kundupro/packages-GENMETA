@@ -5,11 +5,11 @@
   MetaG.plot(x, study_info_plot)
 }
 \arguments{
-  \item{x}{an object of class "GMeta"}
+  \item{x}{an object of class "MetaG"}
 
   \item{study_info_plot}{a list of lists containing
   information about the studies(similar to the study_info
-  argument used in GMeta function.)}
+  argument used in MetaG function.)}
 }
 \description{
   This function plots the confidence intervals with boxes
@@ -20,7 +20,7 @@
   dataset, "study_info_plot", which meets the assumption.
 }
 \examples{
-# This example shows how to obtain the forest plot of GMeta object.
+# This example shows how to obtain the forest plot of MetaG object.
 #########################
 ### Basic setting #######
 #########################

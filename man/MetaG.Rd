@@ -40,7 +40,7 @@
   are assumed to be different. Default is FALSE.}
 
   \item{initial_val}{an optional numeric vector containing
-  initial values for the full model parameters which is
+  initial values for the maximal model parameters which is
   needed for the IRWLS algorithm. Default is set to the one
   obtained from standard meta-analysis of the available
   estimates for each of the parameters across studies.}
@@ -242,15 +242,15 @@ Sigma.m3 = solve(T.1)\%*\%T.2\%*\%solve(T.1)
 names(theta.m1)=c("(Intercept)","Age","Height")
 names(theta.m2)=c("(Intercept)","Height", "Weight")
 names(theta.m3)=c("(Intercept)","Age", "Weight")
-study1 = list(Coeff=theta.m1,Covariance=Sigma.m1,Sample_size=n1)
-study2 = list(Coeff=theta.m2,Covariance=Sigma.m2,Sample_size=n2)
-study3 = list(Coeff=theta.m3,Covariance=Sigma.m3,Sample_size=n3)
+study1 = list(Coeff=theta.m1,Covariance=NULL,Sample_size=n1)
+study2 = list(Coeff=theta.m2,Covariance=NULL,Sample_size=n2)
+study3 = list(Coeff=theta.m3,Covariance=NULL,Sample_size=n3)
 studies = list(study1,study2,study3)
 model = "logistic"
 reference = cbind(rep(1,n), X.rf)
 colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-MetaG.summary(result.same)
+result.same.intercepts = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+result.different.intercepts = MetaG(studies, reference, model, variable_intercepts=TRUE)
 }
 \author{
   Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.

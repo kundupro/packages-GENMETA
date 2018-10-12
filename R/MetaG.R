@@ -229,23 +229,25 @@
 
 ###now put in the MetaG example
 
-#' study1 = list(Coeff=theta.m1,Covariance=Sigma.m1,Sample_size=n1)
-#' study2 = list(Coeff=theta.m2,Covariance=Sigma.m2,Sample_size=n2)
-#' study3 = list(Coeff=theta.m3,Covariance=Sigma.m3,Sample_size=n3)
+#' study1 = list(Coeff=theta.m1,Covariance=NULL,Sample_size=n1)
+#' study2 = list(Coeff=theta.m2,Covariance=NULL,Sample_size=n2)
+#' study3 = list(Coeff=theta.m3,Covariance=NULL,Sample_size=n3)
 
 #' studies = list(study1,study2,study3)
 #' model = "logistic"
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-#' MetaG.summary(result.same)
+#' result.same.intercepts = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+#' result.different.intercepts = MetaG(studies, reference, model, variable_intercepts=TRUE)
+
 
 #' @author Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
 #' @import magic
 #' @import MASS
 #' @import stats
 #' @import graphics
+#' @import Matrix
 #' @export
 #library(magic)
 #library(MASS)

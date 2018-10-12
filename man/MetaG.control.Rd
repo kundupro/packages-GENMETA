@@ -11,7 +11,7 @@
   step is less than epsilon, i.e, \eqn{|estimate_{new} -
   estimate_{old}| < \epsilon}}
 
-  \item{maxit}{a positive numeric indicating the maximum
+  \item{maxit}{a positive number indicating the maximum
   number of iterations to be used in the algorithm. Default
   is 1000.}
 }
@@ -22,7 +22,7 @@
   This is an auxiliary function for the iteratively
   reweighted least squares algorithm for GMeta. This is
   used internally by the myoptim function, but can be used
-  by the user to create a control argument in the GMeta
+  by the user to create a control argument in the MetaG
   function
 }
 \examples{

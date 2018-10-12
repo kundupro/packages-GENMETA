@@ -13,7 +13,8 @@ Imports:
     MASS,
     magic,
     graphics,
-    stats
+    stats,
+    Matrix
 License: GPL
 Encoding: UTF-8
 LazyData: true
