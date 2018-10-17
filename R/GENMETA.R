@@ -303,7 +303,7 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
     error_2 <- 0
     error_3 <- 0
     error_4 <- 0
-    #error_5 <- 0
+    error_5 <- 0
     no_of_studies <- length(study_estimates)
     #try(if(no_of_studies != length(study_estimates)) stop("number of studies does not match with length of the list study"))
     temp <- c()
@@ -378,7 +378,11 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
         print("names of covariates in the reference data does not match with that of the study specific covariates")
         error_4 <- 1
     }
-
+    if(model == "linear" & variable_intercepts == "TRUE")
+    {
+      print("When the model is linear, the current version works only when intercepts are assumed same across studies ")
+      error_5 <- 1
+    }
     ## Needed for calculating initial value
     names_wo_intercept <- c()
     for(i in 1:no_of_studies)
@@ -401,7 +405,7 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
     ## End of the need for calculating initial value
 
     ## If the given inputs pass all the sanity checks...
-    if(error_1 == 0 && error_2 == 0 && error_3 == 0 && error_4 == 0)
+    if(error_1 == 0 && error_2 == 0 && error_3 == 0 && error_4 == 0 && error_5 == 0)
     {
       
       if(length(initial_val) == 0)
