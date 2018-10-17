@@ -15,7 +15,7 @@ GENMETA.control(epsilon = 1e-06, maxit = 1000)
 A list with components named as the arguments.
 }
 \description{
-This is an auxiliary function for the iteratively reweighted least squares algorithm for GMeta.
+This is an auxiliary function for the iteratively reweighted least squares algorithm for GENMETA.
 This is used internally by the myoptim function, but can be used by the user to create a control argument in the GENMETA function
 }
 \examples{

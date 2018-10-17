@@ -1,6 +1,6 @@
 #' Generalized Meta-analysis(forest plot)
 #'
-#' This function plots the confidence intervals with boxes as the study specific estimates and diamond as the GMeta estimate. For the current version, it assumes that the estimate of the variance-covariance matrix in each of the studies is provided.
+#' This function plots the confidence intervals with boxes as the study specific estimates and diamond as the GENMETA estimate. For the current version, it assumes that the estimate of the variance-covariance matrix in each of the studies is provided.
 #' It is demonstrated using a different dataset, "study_info_plot", which meets the assumption.
 #' @param x an object of class "GENMETA"
 #' @param study_info_plot a list of lists containing information about the studies(similar to the study_info argument used in GENMETA function.)
@@ -227,7 +227,7 @@ GENMETA.plot <- function(x, study_info_plot)
   {
     row_names <- c(row_names, paste0("Study",i))
   }
-  row_names <- c(row_names, "GMeta")
+  row_names <- c(row_names, "GENMETA")
 
 
   #op <- par(ask=TRUE)
@@ -277,7 +277,7 @@ GENMETA.plot <- function(x, study_info_plot)
     axis(2, at = data_plot[,1], labels = rownames(data_plot), las = 2)
     title(main = tot_var_names_wo_intercept[i])
 
-    #legend("topright", legend = c("Study specific estimates", "GMeta estimate", "95% CI"), lty = c(NA,NA,1), pch = c(15,18,NA))
+    #legend("topright", legend = c("Study specific estimates", "GENMETA estimate", "95% CI"), lty = c(NA,NA,1), pch = c(15,18,NA))
     readline(prompt="Press [enter] for the forestplot of next covariate:")
   }
 }
