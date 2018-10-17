@@ -10,7 +10,7 @@ Step1:
 install.packages("devtools", dependencies=TRUE)  
 library(devtools)  
 
-install_github("github.com/28pro92/packages-GENMETA")  
+install_github("28pro92/packages-GENMETA")  
 library(GENMETA)  
 
 STEP:2  
