@@ -369,18 +369,18 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
 
     if(ncol(ref_dat) < length(temp))
     {
-        print("number of covariates in the reference data does not match with that of the maximal model")
+        print("Error: number of covariates in the reference data does not match with that of the maximal model")
         error_3 <- 1
     }
 
     if(sum(is.na(match(temp, colnames(ref_dat)))) > 0)
     {
-        print("names of covariates in the reference data does not match with that of the study specific covariates")
+        print("Error: names of covariates in the reference data does not match with that of the study specific covariates")
         error_4 <- 1
     }
     if(model == "linear" & variable_intercepts == "TRUE")
     {
-      print("When the model is linear, the current version works only when intercepts are assumed same across studies ")
+      print("Error: when the model is linear, the current version works only when intercepts are assumed same across studies ")
       error_5 <- 1
     }
     ## Needed for calculating initial value
