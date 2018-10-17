@@ -1,5 +1,5 @@
 # GENMETA : An R package
-Generalized Meta-Analysis(GENMETA) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates. GENMETA implements the generalized meta-analysis using IRWLS algorithm.  
+Generalized Meta-Analysis(GENMETA) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates. GENMETA implements the generalized meta-analysis using iteratively reweighted least squares (IRWLS) algorithm.  
 This file provides guidelines for implementing generalized meta-analysis(GENMETA)  
 
 
