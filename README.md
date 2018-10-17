@@ -1,27 +1,21 @@
 # GENMETA : An R package
-Generalized Meta-Analysis(GENMETA) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates. GENMETA implements the generalized meta-analysis using iteratively reweighted least squares (IRWLS) algorithm. For details of the method, please see the arXiv version of our paper at: https://arxiv.org/abs/1708.03818   
+Generalized Meta-Analysis(GENMETA) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates. GENMETA implements the generalized meta-analysis using iteratively reweighted least squares (IRWLS) algorithm. For details of the method, please see Reference below.
 This file provides guidelines for implementing generalized meta-analysis(GENMETA)  
 
 
 NOTE: If the user wants to directly download the source files from Github, please go to the link https://github.com/28pro92/GENMETA) and see the README for further instructions.   
 If the user wants to directly install the package from R console, please read the following instructions:  
 
-Step1:  
+# Installation procedure:  
 install.packages("devtools", dependencies=TRUE)  
 library(devtools)  
 
 install_github("28pro92/packages-GENMETA")  
 library(GENMETA)  
 
-STEP:2  
 
-##---- sourcing the files in the GENMETA------##  
-source("GENMETA.R")  
-source("myoptim.R")  
-source("GENMETA.summary.R")  
-source("sign.star.R")  
-
-#--------- The following code is for the simulation results in Table 2----------------#  
+# Example describing how to create input aruments for GENMETA
+#--------- The following code is for the simulation results in Table 3 shown in Reference----------------#  
 
 
 # Setting-I (Ideal setting)  
@@ -726,6 +720,8 @@ write.csv(result, file = "Simulation_9.csv", row.names = F)
 
 
 
+#Reference
+Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. https://arxiv.org/abs/1708.03818
 
 
 
