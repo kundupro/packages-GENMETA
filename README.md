@@ -3,14 +3,15 @@ Generalized Meta-Analysis(GENMETA) is an approach for combining information on m
 This file provides guidelines for implementing generalized meta-analysis(GENMETA)  
 
 
-STEP:1  
-Download the zip file and extract the files into a folder.  
-Make that folder as the current working directory.  
+NOTE: If the user wants to directly download the source files from Github, please go to the link https://github.com/28pro92/GENMETA) and see the README for further instructions.   
+If the user wants to directly install the package from R console, please read the following instructions:  
 
-For example, if the path to the folder containing the files is “~/Documents/GENMETA”  
-then to make the current directory as GENMETA, type in the following in the R Console  
+Step1:  
+install.packages("devtools", dependencies=TRUE)  
+library(devtools)  
 
-setwd("~/Documents/GENMETA")  
+install_github("github.com/28pro92/packages-GENMETA")  
+library(GENMETA)  
 
 STEP:2  
 
