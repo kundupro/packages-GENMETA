@@ -720,7 +720,7 @@ write.csv(result, file = "Simulation_9.csv", row.names = F)
 
 
 
-#Reference
+# Reference
 Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. https://arxiv.org/abs/1708.03818
 
 
