@@ -2,11 +2,11 @@
 #'
 #' This function plots the confidence intervals with boxes as the study specific estimates and diamond as the GMeta estimate. For the current version, it assumes that the estimate of the variance-covariance matrix in each of the studies is provided.
 #' It is demonstrated using a different dataset, "study_info_plot", which meets the assumption.
-#' @param x an object of class "MetaG"
-#' @param study_info_plot a list of lists containing information about the studies(similar to the study_info argument used in MetaG function.)
+#' @param x an object of class "GENMETA"
+#' @param study_info_plot a list of lists containing information about the studies(similar to the study_info argument used in GENMETA function.)
 #' @import graphics
 #' @examples
-#' # This example shows how to obtain the forest plot of MetaG object.
+#' # This example shows how to obtain the forest plot of GENMETA object.
 #' #########################
 #' ### Basic setting #######
 #' #########################
@@ -195,7 +195,7 @@
 #' names(theta.m2)=c("(Intercept)","Height", "Weight")
 #' names(theta.m3)=c("(Intercept)","Age", "Weight")
 
-###now put in the MetaG example
+###now put in the GENMETA example
 
 #' study1 = list(Coeff=theta.m1,Covariance=Sigma.m1,Sample_size=n1)
 #' study2 = list(Coeff=theta.m2,Covariance=Sigma.m2,Sample_size=n2)
@@ -206,11 +206,11 @@
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' result_diff <- MetaG(studies, reference, model, variable_intercepts = TRUE)
-#' MetaG.plot(result_diff, studies)
+#' result_diff <- GENMETA(studies, reference, model, variable_intercepts = TRUE)
+#' GENMETA.plot(result_diff, studies)
 #' @export
 
-MetaG.plot <- function(x, study_info_plot)
+GENMETA.plot <- function(x, study_info_plot)
 {
   no_of_studies <- length(study_info_plot)
   row_names <- c()

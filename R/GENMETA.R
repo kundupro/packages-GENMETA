@@ -1,7 +1,7 @@
 #' Implementing Generalized Meta-analysis
 #'
-#' Generalized Meta-analysis(GMeta) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates.
-#' MetaG implements the generalized meta-analysis using IRWLS algorithm.
+#' Generalized Meta-analysis(GENMETA) is an approach for combining information on multivariate regression parameters across multiple different studies which have different, but, possibly overlapping information on subsets of covariates.
+#' GENMETA implements the generalized meta-analysis using IRWLS algorithm.
 #' @param study_info a list of lists containing information about the studies; the main list contains a list for each study, which must have the fields:
 #' \itemize{
 #' \item{"Coeff": a named numeric vector containing the estimates of regression parameters (including intercept) where the names identify the covariates. For example, names(study_info$Coeff) <- c("(Intercept)", "Age", "Height", "Weight").}
@@ -12,29 +12,29 @@
 #' @param model a description of the type of regression model; this is a character string naming the regression model. The current version is for "logistic" and "linear".
 #' @param variable_intercepts an optional logical (applicable only when the model is "logistic"); if TRUE, the intercepts of the true models for each of the studies are assumed to be different. Default is FALSE.
 #' @param initial_val an optional numeric vector containing initial values for the maximal model parameters which is needed for the IRWLS algorithm. Default is set to the one obtained from standard meta-analysis of the available estimates for each of the parameters across studies.
-#' @param control an optional list containing the epsilon (positive numeric) and maxiter (positive number) needed for convergence of the algorithm. Default epsilon and maximum iterations are 1e-06 and 1000, respectively. For creating a control argument for MetaG, see \code{\link[MetaG]{MetaG.control}}.
-#' @details Generalized Meta-analysis (MetaG) is a tool that allows researchers to quickly build models for multivariate meta-analysis in the presence of disparate covariate information across studies. It is implemented based on mainly two input arguments:
+#' @param control an optional list containing the epsilon (positive numeric) and maxiter (positive number) needed for convergence of the algorithm. Default epsilon and maximum iterations are 1e-06 and 1000, respectively. For creating a control argument for GENMETA, see \code{\link[GENMETA]{GENMETA.control}}.
+#' @details Generalized Meta-analysis (GENMETA) is a tool that allows researchers to quickly build models for multivariate meta-analysis in the presence of disparate covariate information across studies. It is implemented based on mainly two input arguments:
 #' \itemize{
 #' \item{Information on the model parameters from each of the studies.}
 #' \item{Reference data for estimation of the joint distribution of all the distinct covariates across studies.}}
 #' The software provides flexibility to the users to choose the intercepts to be different (when the model is logistic) across studies through the input argument, variable_intercepts.
 #' It also allows estimation of the regression parameters, only from the sample sizes of the studies when it is difficult to obtain estimate of the variance-covariance matrices.
-#' \cr \cr \bold{Note}: MetaG will not work if both the estimates of the covariance matrix and the sample size are NULL.
+#' \cr \cr \bold{Note}: GENMETA will not work if both the estimates of the covariance matrix and the sample size are NULL.
 #' @details When the model is "linear", it is assumed that the outcome is standardized to have unit variance.
 #' For more details on the IRWLS, see References.
-#' @return An object of class "MetaG" is a list containing MetaG estimate, its variance-covariance matrix and estimates the residual variance in the case of "linear" model .
+#' @return An object of class "GENMETA" is a list containing GENMETA estimate, its variance-covariance matrix and estimates the residual variance in the case of "linear" model .
 #' \item{Est.coeff}{a numeric vector containing the estimated regression coefficients of the maximal model using optimal weighting matrix.}
-#' \item{Est.var.cov}{a matrix containing estimate of variance-covariance matrix of the corresponding MetaG estimator.}
-#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{MetaG}^Tvar(X)\hat{\beta}_{MetaG}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
+#' \item{Est.var.cov}{a matrix containing estimate of variance-covariance matrix of the corresponding GENMETA estimator.}
+#' \item{Res.var}{a numeric containing the residual variance of the maximal model when it is linear. It is calculated from the formula : \eqn{1 - \hat{\beta}_{GENMETA}^Tvar(X)\hat{\beta}_{GENMETA}} which is derived by assuming the outcomes to have unit variance. \eqn{var(X)} is calculated from reference data. Res.var is NA when the model is "logistic".}
 #' \item{iter}{a numeric containing the number of iterations used in the algorithm}
 #' \item{call}{the matched call}
-#' \cr The function \code{\link[MetaG]{MetaG.summary}} prints a summary of the results obtained from MetaG.
-#' \cr The function \code{\link[MetaG]{MetaG.plot}} plots the estimate of the parameter from each of the studies, the summary measure(MetaG estimate) and their confidence intervals. 
+#' \cr The function \code{\link[GENMETA]{GENMETA.summary}} prints a summary of the results obtained from GENMETA.
+#' \cr The function \code{\link[GENMETA]{GENMETA.plot}} plots the estimate of the parameter from each of the studies, the summary measure(GENMETA estimate) and their confidence intervals. 
 #' @keywords Generalized Meta Analysis
 #' @references Tang, R., Kundu, P. and Chatterjee, N. (2017) Generalized Meta-Analysis for Multivariate Regression Models Across Studies with Disparate Covariate Information. \href{https://arxiv.org/abs/1708.03818}{arXiv:1708.03818v1 [stat.ME]}.
-#' @seealso \code{\link[MetaG]{MetaG.summary}}, \code{\link[MetaG]{MetaG.plot}}.
+#' @seealso \code{\link[GENMETA]{GENMETA.summary}}, \code{\link[GENMETA]{GENMETA.plot}}.
 #' @examples
-#' # This example shows how to create the inputs MetaG and then implement generalized meta-analysis
+#' # This example shows how to create the inputs GENMETA and then implement generalized meta-analysis
 #' #########################
 #' ### Basic setting #######
 #' #########################
@@ -227,7 +227,7 @@
 #' names(theta.m2)=c("(Intercept)","Height", "Weight")
 #' names(theta.m3)=c("(Intercept)","Age", "Weight")
 
-###now put in the MetaG example
+###now put in the GENMETA example
 
 #' study1 = list(Coeff=theta.m1,Covariance=NULL,Sample_size=n1)
 #' study2 = list(Coeff=theta.m2,Covariance=NULL,Sample_size=n2)
@@ -238,8 +238,8 @@
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' same.inter = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-#' diff.inter = MetaG(studies, reference, model, variable_intercepts=TRUE)
+#' same.inter = GENMETA(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+#' diff.inter = GENMETA(studies, reference, model, variable_intercepts=TRUE)
 
 
 #' @author Prosenjit Kundu, Runlong Tang and Nilanjan Chatterjee.
@@ -252,11 +252,11 @@
 #library(magic)
 #library(MASS)
 
-#Definition of MetaG function
+#Definition of GENMETA function
 
-#MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control = list(epsilon = 1e-06, maxit = 1000))
+#GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, control = list(epsilon = 1e-06, maxit = 1000))
 
-MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial_val=NULL, control = list(epsilon = 1e-06, maxit = 1000))
+GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial_val=NULL, control = list(epsilon = 1e-06, maxit = 1000))
 {
   #print("Computing in progress!")
   # optional_arguments <- list(...)
@@ -279,7 +279,7 @@ MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
  #  }
   # if(missing(control))
   # {
-  #   control <- MetaG.control()
+  #   control <- GENMETA.control()
   #   threshold <- control[[1]]
   #   maxit <- control[[2]]
   # }
@@ -626,7 +626,7 @@ MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
             names(beta_old) <- colnames(ref_dat)
             
             linear_result <- list("Est.coeff" = beta_old, "Est.var.cov" = asy_var_opt, "Res.var" = disp_max_old, "iter" = no_of_iter, "call" = call_MetaG)
-            class(linear_result) <- "MetaG"
+            class(linear_result) <- "GENMETA"
             return(linear_result)
 
         }
@@ -739,7 +739,7 @@ MetaG <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initial
                 
 
                 logistic_result <- list("Est.coeff" = beta_initial, "Est.var.cov" = asy_var_beta_converged, "Res.var" = NA, "iter" = total_iter, "call" = call_MetaG)
-                class(logistic_result) <- "MetaG"
+                class(logistic_result) <- "GENMETA"
                 return(logistic_result)
 
         }

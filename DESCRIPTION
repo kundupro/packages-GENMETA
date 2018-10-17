@@ -1,4 +1,4 @@
-Package: MetaG
+Package: GENMETA
 Title: Implements Generalized Meta-Analysis
 Version: 0.1
 Authors@R: c(person("Prosenjit", "Kundu", role = c("aut", "cre"),
@@ -21,7 +21,7 @@ RoxygenNote: 6.1.0
 Collate:
     'myoptim.R'
     'sign.star.R'
-    'MetaG.R'
-    'MetaG.control.R'
-    'MetaG.summary.R'
-    'MetaG.plot.R'
+    'GENMETA.R'
+    'GENMETA.control.R'
+    'GENMETA.summary.R'
+    'GENMETA.plot.R'

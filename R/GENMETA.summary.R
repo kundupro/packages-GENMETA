@@ -1,12 +1,12 @@
 #' Summarizing Generalized Meta Analysis
 #'
-#' This function prints the summary of MetaG results.
-#' @param object an object of class "MetaG"
+#' This function prints the summary of GENMETA results.
+#' @param object an object of class "GENMETA"
 #' @param signi_digits an optional numeric indicating the number of significant digits to be shown in the summary. Default is 3.
 #' @import MASS
 #' @importFrom Matrix rankMatrix
 #' @examples
-#' # This example shows how to obtain the summary of MetaG object.
+#' # This example shows how to obtain the summary of GENMETA object.
 #' #####
 #' ### Basic setting
 #' #####
@@ -199,7 +199,7 @@
 #' names(theta.m2)=c("(Intercept)","Height", "Weight")
 #' names(theta.m3)=c("(Intercept)","Age", "Weight")
 
-###now put in the MetaG example
+###now put in the GENMETA example
 
 #' study1 = list(Coeff=theta.m1,Covariance=Sigma.m1,Sample_size=n1)
 #' study2 = list(Coeff=theta.m2,Covariance=Sigma.m2,Sample_size=n2)
@@ -210,14 +210,15 @@
 
 #' reference = cbind(rep(1,n), X.rf)
 #' colnames(reference) = c("(Intercept)","Age","Height", "Weight")
-#' result.same = MetaG(studies, reference, model, initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
-#' MetaG.summary(result.same)
+#' result.same = GENMETA(studies, reference, model, 
+#' initial_val = c(-1.2, log(1.3), log(1.3), log(1.3)))
+#' GENMETA.summary(result.same)
 #' @export
-# summary.MetaG <-function(object, ...){
+# summary.GENMETA <-function(object, ...){
 #   UseMethod("summary")
 #   NextMethod("generic = NULL, object = NULL", ...)
 # }
-MetaG.summary <- function(object, signi_digits = 3)
+GENMETA.summary <- function(object, signi_digits = 3)
 {
   x <- object
   GMeta_opt_estimate <- as.vector(x[[1]])
