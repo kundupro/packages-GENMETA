@@ -3,7 +3,7 @@ Generalized Meta-Analysis(GENMETA) is an approach for combining information on m
 This file provides guidelines for implementing generalized meta-analysis(GENMETA)  
 
 
-NOTE: If the user wish to directly download the source files from Github, please go to the link https://github.com/28pro92/GENMETA) and see the README for further instructions.   
+NOTE: If the user wish to directly download the source files from Github, please go to the link https://github.com/28pro92/GENMETA and see the README for further instructions.   
 If the user wish to directly install the package from R console, please read the following instructions:  
 
 # Installation procedure:  
