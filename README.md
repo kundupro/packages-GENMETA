@@ -14,7 +14,7 @@ install_github("28pro92/packages-GENMETA")
 library(GENMETA)  
 
 
-# Example describing how to create input aruments for GENMETA
+# Example describing how to create input arguments for GENMETA along with some simulation codes: 
 #--------- The following code is for the simulation results in Table 3 shown in Reference----------------#  
 
 
