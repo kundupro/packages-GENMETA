@@ -20,7 +20,7 @@ library(GENMETA)
 
 # Setting-I (Ideal setting)  
 library(MASS)  
-library(stats) 
+library(stats)  
 library(magic)  
 #--#######################  
 #--### Basic setting######  
