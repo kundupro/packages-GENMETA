@@ -21,7 +21,7 @@ library(GENMETA)
 # Setting-I (Ideal setting)  
 library(MASS)  
 library(stats) 
-library(magic)
+library(magic)  
 #--#######################  
 #--### Basic setting######  
 #--#######################  
@@ -306,8 +306,8 @@ elapsed.time = stop.time - start.time
 
 
 #-----Computing the 95% confidence-intervals---#  
-Lower.CI = na.omit(sim.matrix)\[,1:4\] - 1.96*sqrt(na.omit(sim.matrix)\[,5:8\])  
-Upper.CI = na.omit(sim.matrix)\[,1:4\] + 1.96*sqrt(na.omit(sim.matrix)\[,5:8\])  
+Lower.CI = na.omit(sim.matrix)\[,1:4\] - 1.96\*sqrt(na.omit(sim.matrix)\[,5:8\])  
+Upper.CI = na.omit(sim.matrix)\[,1:4\] + 1.96\*sqrt(na.omit(sim.matrix)\[,5:8\])  
 
 #------Computing the coverage rate---------#    
 
