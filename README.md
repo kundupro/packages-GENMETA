@@ -432,7 +432,7 @@ n = 50
 no.of.simulations = 1000  
 
 #----- Defining a matrix to store the results for each simulation----#  
-sim.matrix = matrix(NA, 1000, 8)  
+sim.matrix = matrix(NA, no.of.simulations, 8)  
 
 start.time = Sys.time()  
 
