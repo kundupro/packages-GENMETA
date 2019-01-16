@@ -556,7 +556,7 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
             {
                 col_ind <-  which(colnames(ref_dat) %in% names(study_estimates[[k]][[1]]) == TRUE)
                 temp_lambda_ref <- t(ref_dat[,col_ind]) %*% ref_dat[,col_ind]
-                lambda_ref[[k]] <- (temp_lambda_ref %*% study_estimates[[k]][[2]] %*% temp_lambda_ref)/nrow(ref_dat)
+                lambda_ref[[k]] <- (temp_lambda_ref %*% study_estimates[[k]][[2]] %*% temp_lambda_ref)/(nrow(ref_dat)*disp[k]^2)
             }
             A_n1 <- matrix(NA, nrow(C_init), ncol(ref_dat))
             B_n1 <- matrix(NA, nrow(C_init), 1)
