@@ -108,15 +108,30 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       # }
         
       #print(class(J_n))
-      #print(J_n)
+      print(cond(J_n))
       #print(is.nan(J_n_beta))
       #print(det(J_n))
-      if (abs(det(J_n))>1e-20){
-        #print("original")
-        J_n_inv <- solve(J_n, tol = 1e-60)
-      }else{
-          J_n_inv <- solve(J_n+(mean(diag(J_n))*0.01)*diag(1,dim(J_n)[1]), tol = 1e-60)
+      if(pracma::cond(J_n) > 1000)
+      {
+        perturb_seq = seq(0, mean(diag(J_n)), 0.01)
+        well_condition_status = TRUE 
+        perturb_seq_index = 1
+        while(well_condition_status)
+        {
+          J_n = J_n + perturb_seq[perturb_seq_index]* diag(diag(J_n))
+          if(pracma::cond(J_n) <= 1000)
+            well_condition_status = FALSE
+          perturb_seq_index = perturb_seq_index + 1
+        }
       }
+      
+      #---- lines 129 to 134 updated by adding 0.01*mean of diagonal of J_n to J_n
+      #if (abs(det(J_n))>1e-20){
+        #print("original")
+       # J_n_inv <- solve(J_n, tol = 1e-60)
+      #}else{
+       #   J_n_inv <- solve(J_n+(mean(diag(J_n))*0.01)*diag(1,dim(J_n)[1]), tol = 1e-60)
+      #}
       #if(det(J_n) == 0)
       #{
         #beta_old <- rep(NA, ncol(ref_dat))
@@ -369,18 +384,31 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       #print(J_n)
       #print(is.nan(J_n_beta))
       #print(det(J_n))
-      
-      if (abs(det(J_n))>1e-20){
-        #print("original")
-        J_n_inv <- solve(J_n, tol = 1e-60)
-      }else{
-          J_n_inv <- solve(J_n+(mean(diag(J_n))*0.01)*diag(1,dim(J_n)[1]), tol = 1e-60)
+      if(pracma::cond(J_n) > 1000)
+      {
+        perturb_seq = seq(0, mean(diag(J_n)), 0.01)
+        well_condition_status = TRUE 
+        perturb_seq_index = 1
+        while(well_condition_status)
+        {
+          J_n = J_n + perturb_seq[perturb_seq_index]* diag(diag(J_n))
+          if(pracma::cond(J_n) <= 1000)
+            well_condition_status = FALSE
+          perturb_seq_index = perturb_seq_index + 1
+        }
       }
+      #--lines 401 to 406 upadted before based on adding 0.01 to mean diagonal
+      #if (abs(det(J_n))>1e-20){
+        #print("original")
+       # J_n_inv <- solve(J_n, tol = 1e-60)
+      #}else{
+      #    J_n_inv <- solve(J_n+(mean(diag(J_n))*0.01)*diag(1,dim(J_n)[1]), tol = 1e-60)
+      #}
       #if(det(J_n) == 0)
       #{ beta_old <- rep(NA, (ncol(ref_dat) - 1 + no_of_studies))
       #break;
       #}
-      beta_new <- beta_old - (J_n_inv %*% Dn)
+      beta_new <- beta_old - (solve(J_n, tol=1e-60) %*% Dn)
       #print(D_n_beta_t)
       #print(beta_old)
       #print(beta_new)
