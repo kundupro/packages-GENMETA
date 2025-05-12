@@ -98,6 +98,11 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       #   print("W_star Negative definite")
       #Define Jacobian here
       J_n <- t(X_rbind) %*% W_star %*% X_rbind
+      
+      #Scaling Jacobian
+      max_absolute_J_n = abs(max(diag(J_n)))
+      J_n = J_n/max_absolute_J_n
+      
       # if(is.symmetric.matrix(J_n) != TRUE)
       # {
       #   print("J_n Not symmetric")
@@ -139,7 +144,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         #print("The Jacobian is singular")
         #break;
       #}
-      beta_new <- beta_old - (solve(J_n, tol=1e-60) %*% Dn)
+      beta_new <- beta_old - (solve(J_n, tol=1e-60) %*% (Dn/max_absolute_J_n))
       #print(D_n_beta_t)
       #print(beta_old)
       #print(beta_new)
@@ -394,6 +399,11 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
 
       #Define Jacobian here
       J_n <- t(X_rbind_star) %*% W_star %*% X_rbind_star
+      
+      #Scaling Jacobian
+      max_absolute_J_n = abs(max(diag(J_n)))
+      J_n = J_n/max_absolute_J_n
+      
       #print(class(J_n))
       #print(J_n)
       #print(is.nan(J_n_beta))
@@ -422,7 +432,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       #{ beta_old <- rep(NA, (ncol(ref_dat) - 1 + no_of_studies))
       #break;
       #}
-      beta_new <- beta_old - (solve(J_n, tol=1e-60) %*% Dn)
+      beta_new <- beta_old - (solve(J_n, tol=1e-60) %*% (Dn*max_absolute_J_n))
       #print(D_n_beta_t)
       #print(beta_old)
       #print(beta_new)
