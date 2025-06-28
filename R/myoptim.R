@@ -419,10 +419,10 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       J_n <- t(X_rbind_star) %*% W_star %*% X_rbind_star
       
       #Scaling Jacobian
-            #Scaling Jacobian
       max_absolute_J_n = abs(max(diag(J_n)))
       J_n_init = J_n/max_absolute_J_n
-
+      eps = max(svd(J_n_init)$d) / pracma::cond(J_n_init)
+      ill_conditioned_J_n = FALSE
       # if(is.symmetric.matrix(J_n) != TRUE)
       # {
       #   print("J_n Not symmetric")
@@ -438,25 +438,35 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       #print(det(J_n))
       if(pracma::cond(J_n_init) > 1000)
         {
-         perturb_seq = seq(0, mean(diag(J_n_init)), 0.01)
-         well_condition_status = TRUE 
-         perturb_seq_index = 2
-         while(well_condition_status)
-          {
-           J_n_init = J_n_init + diag(perturb_seq[perturb_seq_index], nrow(J_n_init))
-           #J_n = J_n + perturb_seq[perturb_seq_index]* diag(diag(J_n))
-           if(pracma::cond(J_n_init) <= 1000)
-             well_condition_status = FALSE
-           perturb_seq_index = perturb_seq_index + 1
-          }
+          ill_conditioned_J_n = TRUE
+          #perturb_seq = seq(eps, mean(diag(J_n_init)), 1e-08)
+          #perturb_seq = seq(0, mean(diag(J_n_init)), 0.01)
+          well_condition_status = TRUE 
+          cond_max_iter = 2000
+          perturb_seq_index = 1
+          while(well_condition_status & perturb_seq_index <= cond_max_iter)
+            {
+              J_n_init = J_n_init + diag(eps, nrow(J_n_init))
+              #J_n_init = J_n_init + diag(perturb_seq[perturb_seq_index], nrow(J_n_init))
+              #J_n = J_n + perturb_seq[perturb_seq_index]* diag(diag(J_n))
+              if(pracma::cond(J_n_init) <= 1000)
+                well_condition_status = FALSE
+              perturb_seq_index = perturb_seq_index + 1
+              eps = eps + 1e-08
+            }
+        }else{
+              J_init = J_init
         }
 
-      if(well_condition_status == FALSE)
-        {
-          beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
-        }else{
-          beta_new <- beta_old - (MASS::ginv(J_n) %*% Dn)
-        }
+        if(ill_conditioned_J_n == FALSE)
+          {
+            beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
+          }else_if(ill_conditioned_J_n == TRUE & well_condition_status == FALSE)
+          {
+            beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
+          }else{
+            beta_new <- beta_old - (MASS::ginv(J_n) %*% Dn)
+          }
       #--lines 401 to 406 upadted before based on adding 0.01 to mean diagonal
       #if (abs(det(J_n))>1e-20){
         #print("original")
