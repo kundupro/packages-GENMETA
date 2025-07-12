@@ -142,7 +142,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         if(ill_conditioned_J_n == FALSE)
           {
             beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
-          }else_if(ill_conditioned_J_n == TRUE & well_condition_status == FALSE)
+          }else if(ill_conditioned_J_n == TRUE & well_condition_status == FALSE)
           {
             beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
           }else{
@@ -461,7 +461,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
         if(ill_conditioned_J_n == FALSE)
           {
             beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
-          }else_if(ill_conditioned_J_n == TRUE & well_condition_status == FALSE)
+          }else if(ill_conditioned_J_n == TRUE & well_condition_status == FALSE)
           {
             beta_new <- beta_old - (solve(J_n_init, tol=1e-60) %*% (Dn/max_absolute_J_n))
           }else{
