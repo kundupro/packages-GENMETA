@@ -657,8 +657,8 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
                   print("WARNING:THE ALGORITHM DID NOT CONVERGE")
                   #beta_initial = rep(NA, ncol(ref_dat))
                   #asy_var_beta_converged = NULL
-                  beta_initial = beta_identity
-                  asy_var_beta_converged = asy_var_beta_converged_identity
+                  beta_initial <- beta_identity
+                  asy_var_beta_converged <- asy_var_beta_converged_identity
                   total_iter <- total_iter + total_iter_identity
                 }else{
                   
