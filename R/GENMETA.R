@@ -654,9 +654,12 @@ GENMETA <- function(study_info, ref_dat, model, variable_intercepts=FALSE, initi
                 
                 if(sum(is.na(beta_identity)) > 0 || output_identity$Status == 0)
                 {
-                  #print("Jacobian is computationally singular or the algo didn't converge")
-                  beta_initial = rep(NA, ncol(ref_dat))
-                  asy_var_beta_converged = NULL
+                  print("WARNING:THE ALGORITHM DID NOT CONVERGE")
+                  #beta_initial = rep(NA, ncol(ref_dat))
+                  #asy_var_beta_converged = NULL
+                  beta_initial = beta_identity
+                  asy_var_beta_converged = asy_var_beta_converged_identity
+                  total_iter <- total_iter + total_iter_identity
                 }else{
                   
                   while(proceed)
