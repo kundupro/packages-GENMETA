@@ -257,33 +257,52 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       Delta_hat <- (U %*% t(U))/(nrow(ref_dat))
 
       # Defining optimal C here...
+      #Scaling inv_C
       inv_C <- Lambda_ref + Delta_hat
-      if(pracma::cond(inv_C) > 1000)
-      {
-        perturb_seq_C = seq(0, mean(diag(inv_C)), 0.01)
-        well_condition_status_C = TRUE 
-        perturb_seq_index_C = 1
-        while(well_condition_status_C)
+      max_absolute_inv_C = abs(max(diag(inv_C)))
+      inv_C_init = inv_C/max_absolute_inv_C
+      eps_inv_C = max(svd(inv_C_init)$d) / pracma::cond(inv_C_init)
+      ill_conditioned_inv_C = FALSE
+      
+      if(pracma::cond(inv_C_init) > 1000){
+        ill_conditioned_inv_C = TRUE
+        #perturb_seq = seq(eps, mean(diag(J_n_init)), 1e-08)
+        #perturb_seq = seq(0, mean(diag(J_n_init)), 0.01)
+        well_condition_status = TRUE 
+        cond_max_iter = 2000
+        perturb_seq_index = 1
+        while(well_condition_status & perturb_seq_index <= cond_max_iter)
         {
-          inv_C = inv_C + perturb_seq_C[perturb_seq_index_C]* diag(diag(inv_C))
-          if(pracma::cond(inv_C) <= 1000)
-            well_condition_status_C = FALSE
-          perturb_seq_index_C = perturb_seq_index_C + 1
+          inv_C_init = inv_C_init + diag(eps, nrow(inv_C_init))
+          #J_n_init = J_n_init + diag(perturb_seq[perturb_seq_index], nrow(J_n_init))
+          #J_n = J_n + perturb_seq[perturb_seq_index]* diag(diag(J_n))
+          if(pracma::cond(inv_C_init) <= 1000)
+            well_condition_status = FALSE
+          perturb_seq_index = perturb_seq_index + 1
+          eps = eps + 1e-08
         }
+      }else{
+        inv_C_init = inv_C_init
       }
-      ##if (abs(det(inv_C))>1e-20){
-        #print("original")
-        ##C_beta <- solve(inv_C, tol = 1e-60)
-      ##}else{
-        ##C_beta <- solve(inv_C+(mean(diag(inv_C))*0.01)*diag(1,dim(inv_C)[1]), tol = 1e-60)
-      ##}
       
-      C_beta <- solve(inv_C, tol = 1e-60)
+      if(ill_conditioned_inv_C == FALSE)
+      {
+        C_beta = solve(inv_C_init, tol=1e-60)
+      }else if(ill_conditioned_inv_C == TRUE & well_condition_status == FALSE)
+      {
+        C_beta = solve(inv_C_init, tol=1e-60)
+      }else{
+        C_beta = MASS::ginv(inv_C_init)
+      }
       
-      # Defining Gamma_hat here...
+      
+      #C_beta <- solve(inv_C, tol = 1e-60)
+      
       Gamma_hat <- Gamma_hat/nrow(ref_dat)
-
-      info <- (t(Gamma_hat) %*% C_beta %*% Gamma_hat)
+      
+      #info <- (t(Gamma_hat) %*% C_beta %*% Gamma_hat)
+      info <- ((t(Gamma_hat) %*% C_beta %*% Gamma_hat))/max_absolute_inv_C
+      
       if(det(info) == 0)
       {
         asy_var_opt = NULL
@@ -586,34 +605,67 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       Delta_hat <- (U %*% t(U))/(nrow(ref_dat))
       inv_C <- Lambda_ref + Delta_hat
       
-      if(pracma::cond(inv_C) > 1000)
-      {
-        perturb_seq_C = seq(0, mean(diag(inv_C)), 0.01)
-        well_condition_status_C = TRUE 
-        perturb_seq_index_C = 1
-        while(well_condition_status_C)
+      # if(pracma::cond(inv_C) > 1000)
+      # {
+      #   perturb_seq_C = seq(0, mean(diag(inv_C)), 0.01)
+      #   well_condition_status_C = TRUE 
+      #   perturb_seq_index_C = 1
+      #   while(well_condition_status_C)
+      #   {
+      #     inv_C = inv_C + perturb_seq_C[perturb_seq_index_C]* diag(diag(inv_C))
+      #     if(pracma::cond(inv_C) <= 1000)
+      #       well_condition_status_C = FALSE
+      #     perturb_seq_index_C = perturb_seq_index_C + 1
+      #   }
+      # }
+      
+      #Scaling inv_C
+      inv_C <- Lambda_ref + Delta_hat
+      max_absolute_inv_C = abs(max(diag(inv_C)))
+      inv_C_init = inv_C/max_absolute_inv_C
+      eps_inv_C = max(svd(inv_C_init)$d) / pracma::cond(inv_C_init)
+      ill_conditioned_inv_C = FALSE
+      
+      
+      
+      if(pracma::cond(inv_C_init) > 1000){
+        ill_conditioned_inv_C = TRUE
+        #perturb_seq = seq(eps, mean(diag(J_n_init)), 1e-08)
+        #perturb_seq = seq(0, mean(diag(J_n_init)), 0.01)
+        well_condition_status = TRUE 
+        cond_max_iter = 2000
+        perturb_seq_index = 1
+        while(well_condition_status & perturb_seq_index <= cond_max_iter)
         {
-          inv_C = inv_C + perturb_seq_C[perturb_seq_index_C]* diag(diag(inv_C))
-          if(pracma::cond(inv_C) <= 1000)
-            well_condition_status_C = FALSE
-          perturb_seq_index_C = perturb_seq_index_C + 1
+          inv_C_init = inv_C_init + diag(eps, nrow(inv_C_init))
+          #J_n_init = J_n_init + diag(perturb_seq[perturb_seq_index], nrow(J_n_init))
+          #J_n = J_n + perturb_seq[perturb_seq_index]* diag(diag(J_n))
+          if(pracma::cond(inv_C_init) <= 1000)
+            well_condition_status = FALSE
+          perturb_seq_index = perturb_seq_index + 1
+          eps = eps + 1e-08
         }
+      }else{
+        inv_C_init = inv_C_init
       }
-      ##if (abs(det(inv_C))>1e-20){
-      #print("original")
-      ##C_beta <- solve(inv_C, tol = 1e-60)
-      ##}else{
-      ##C_beta <- solve(inv_C+(mean(diag(inv_C))*0.01)*diag(1,dim(inv_C)[1]), tol = 1e-60)
-      ##}
       
-      C_beta <- solve(inv_C, tol = 1e-60)
+      if(ill_conditioned_inv_C == FALSE)
+      {
+        C_beta = solve(inv_C_init, tol=1e-60)
+      }else if(ill_conditioned_inv_C == TRUE & well_condition_status == FALSE)
+      {
+        C_beta = solve(inv_C_init, tol=1e-60)
+      }else{
+        C_beta = MASS::ginv(inv_C_init)
+      }
       
-
-      #C_beta <- solve(Lambda_ref + Delta_hat, tol = 1e-60)
-      #C_beta <- solve(round(Delta_hat + Lambda_ref,2), tol = 1e-30)
+      
+      #C_beta <- solve(inv_C, tol = 1e-60)
+      
       Gamma_hat <- Gamma_hat/nrow(ref_dat)
 
-      info <- (t(Gamma_hat) %*% C_beta %*% Gamma_hat)
+      #info <- (t(Gamma_hat) %*% C_beta %*% Gamma_hat)
+      info <- ((t(Gamma_hat) %*% C_beta %*% Gamma_hat))/max_absolute_inv_C
       
       if(det(info) == 0)
       {
