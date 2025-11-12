@@ -102,7 +102,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       #Scaling Jacobian
       max_absolute_J_n = abs(max(diag(J_n)))
       J_n_init = J_n/max_absolute_J_n
-      eps = max(svd(J_n_init)$d) / pracma::cond(J_n_init)
+      eps = max(svd(J_n_init)$d)/pracma::cond(J_n_init)
       ill_conditioned_J_n = FALSE
       # if(is.symmetric.matrix(J_n) != TRUE)
       # {
@@ -171,11 +171,11 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       beta_old <- beta_new
       iter = iter + 1
       #print("Number of iterations \n")
-      #print(iter)
-      if(eps_inner < threshold_optim || iter > 2000)
+      print(iter)
+      if(eps_inner < threshold_optim || iter > 500)
       {
          continue <- FALSE
-         if(iter >= 2000 && eps_inner >= threshold_optim)
+         if(iter >= 500 && eps_inner >= threshold_optim)
          {
            status = 0
          }
@@ -331,6 +331,8 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
 
     #print(asy_var_opt)
     # Returning objects for the inner loop(NR method)
+    if(status == 0)
+      print("WARNING:THE ALGORITHM DID NOT CONVERGE")
     return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1, "Status" = status))
   }
 
@@ -507,12 +509,12 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       iter = iter + 1
       #print("Number of iterations \n")
       #print(iter)
-      if(eps_inner < threshold_optim || iter > 2000)
+      if(eps_inner < threshold_optim || iter > 500)
        {
         
         continue <- FALSE
         
-        if(iter >= 2000 && eps_inner >= threshold_optim)
+        if(iter >= 500 && eps_inner >= threshold_optim)
         {
           status = 0
         }
@@ -688,6 +690,8 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
     #asy_var_beta <- (solve(info, tol = 1e-30))/nrow(ref_dat)
     #asy_var_beta <- diag(3)
     #print(asy_var_opt)
+    if(status == 0)
+      print("WARNING:THE ALGORITHM DID NOT CONVERGE")
     return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1, "Status" = status))
   }
 
