@@ -171,7 +171,7 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
       beta_old <- beta_new
       iter = iter + 1
       #print("Number of iterations \n")
-      print(iter)
+      #print(iter)
       if(eps_inner < threshold_optim || iter > 500)
       {
          continue <- FALSE
@@ -331,8 +331,8 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
 
     #print(asy_var_opt)
     # Returning objects for the inner loop(NR method)
-    if(status == 0)
-      print("WARNING:THE ALGORITHM DID NOT CONVERGE")
+    #if(status == 0)
+     # print("WARNING:THE ALGORITHM DID NOT CONVERGE")
     return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1, "Status" = status))
   }
 
@@ -690,8 +690,8 @@ myoptim <- function(no_of_studies, study_optim, ref_dat_optim, X_rbind, X_bdiag_
     #asy_var_beta <- (solve(info, tol = 1e-30))/nrow(ref_dat)
     #asy_var_beta <- diag(3)
     #print(asy_var_opt)
-    if(status == 0)
-      print("WARNING:THE ALGORITHM DID NOT CONVERGE")
+    #if(status == 0)
+     # print("WARNING:THE ALGORITHM DID NOT CONVERGE")
     return(list("beta_optim" = beta_old, "C_optim" = C_beta, "Asy_var_optim" = asy_var_opt,  "iter_IRWLS" = iter - 1, "Status" = status))
   }
 
